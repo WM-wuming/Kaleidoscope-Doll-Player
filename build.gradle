@@ -1,5 +1,5 @@
 plugins {
-	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 }
 
@@ -11,40 +11,21 @@ base {
 }
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
-
 	// GeckoLib 依赖库
-	maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
-
-	// Trinkets 依赖库
 	maven {
-		name = "TerraformersMC"
-		url = "https://maven.terraformersmc.com/"
+		name = 'GeckoLib'
+		url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+		content {
+			includeGroup("com.geckolib")
+		}
 	}
-	maven {
-		name = "Ladysnake Libs"
-		url = 'https://maven.ladysnake.org/releases'
-	}
-
-	// Accessories 的依赖库
-	maven { url 'https://maven.wispforest.io/releases' }
-	maven { url 'https://maven.su5ed.dev/releases' }
-	maven { url 'https://maven.fabricmc.net' }
-
-	// Cloth Config 的依赖库
-	maven { url "https://maven.shedaniel.me/" }
-	maven { url "https://maven.terraformersmc.com/releases/" }
 }
 
 loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"kaleidoscope_doll_workshop" {
+		"kaleidoscope_doll_player" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
@@ -55,16 +36,17 @@ loom {
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-	modImplementation "software.bernie.geckolib:geckolib-fabric-1.20.1:4.8.3"
-	modImplementation "dev.emi:trinkets:3.7.2"
-	modImplementation "io.wispforest:accessories-fabric:1.0.0-beta.47+1.20.1"
+	implementation "com.geckolib:geckolib-fabric-${project.minecraft_version}:${project.geckolib_version}"
 
+	// 前置依赖：KaleidoscopeDoll（引用其本地构建产物）
+	// 上游项目重新构建后若版本号变化，需同步更新下面的文件名
+	implementation files(providers.gradleProperty("localDollDependency").orElse(
+			"../KaleidoscopeDoll/build/libs/kaleidoscopedoll-26.3-fabric-1.4.2-fabric+mc26.3.jar"))
 }
 
 processResources {
@@ -76,7 +58,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
+	it.options.release = 25
 }
 
 java {
@@ -85,8 +67,8 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {
@@ -104,7 +86,8 @@ publishing {
 		}
 	}
 
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+	// See https://docs.gradle.org/current/userguide/publishing_gradle_module_metadata.html#sub:disabling-gmm-publication
+	// for more information on how to disable Gradle Module Metadata.
 	repositories {
 		// Add repositories to publish to here.
 		// Notice: This block does NOT have the same function as the block in the top level.

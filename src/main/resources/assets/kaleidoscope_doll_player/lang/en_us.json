@@ -1,0 +1,21 @@
+{
+  "modmenu.nameTranslation.kaleidoscope_doll_player": "Kaleidoscope Doll Player",
+  "modmenu.descriptionTranslation.kaleidoscope_doll_player": "Adds player-skin dolls to Kaleidoscope Doll. Put wool in the computer, type a player name and generate a doll with that player's skin.",
+  "itemGroup.kaleidoscope_doll_player.group": "Kaleidoscope Doll Player",
+  "item.kaleidoscope_doll_player.player_doll": "Player Doll",
+  "tooltip.kaleidoscope_doll_player.player_doll.owner": "Player: %s",
+  "item.kaleidoscope_doll_player.skin_lock": "Doll Snapshot",
+  "tooltip.kaleidoscope_doll_player.skin_lock": "Right-click a placed player doll, or pick this up and right-click a player doll in your inventory.",
+  "tooltip.kaleidoscope_doll_player.skin_locked": "Skin locked",
+  "message.kaleidoscope_doll_player.skin_lock.pending": "Saving the doll's skin...",
+  "message.kaleidoscope_doll_player.skin_lock.success": "The doll's skin is now locked.",
+  "message.kaleidoscope_doll_player.skin_lock.already_locked": "This doll's skin is already locked.",
+  "message.kaleidoscope_doll_player.skin_lock.unavailable": "Could not save the doll's skin. Wait for its player skin to load and try again.",
+  "message.kaleidoscope_doll_player.skin_lock.cancelled": "The doll or snapshot moved or changed. Nothing was used.",
+  "gui.kaleidoscope_doll_player.computer.generate": "Generate Player Doll: enter a player name or a direct skin PNG URL (leave blank for your own skin). Click to make one, or Shift-click to use all wool.",
+  "gui.kaleidoscope_doll_player.computer.invalid_input": "Enter a player name or a direct HTTP(S) skin PNG URL.",
+  "gui.kaleidoscope_doll_player.computer.downloading": "Downloading skin...",
+  "gui.kaleidoscope_doll_player.computer.skin_failed": "Could not load the skin. Use a direct link to a 64x64 or 64x32 PNG without redirects.",
+  "gui.kaleidoscope_doll_player.computer.wool_required": "Put wool in the computer first.",
+  "subtitle.kaleidoscope_doll_player.block.duck_toy": "Duck Toy Sound"
+}

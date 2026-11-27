@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "minecraft:amethyst_shard"
+  ],
+  "result": {
+    "id": "kaleidoscope_doll_player:skin_lock",
+    "count": 1
+  }
+}

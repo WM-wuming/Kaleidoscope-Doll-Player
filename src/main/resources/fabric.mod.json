@@ -1,33 +1,43 @@
 {
 	"schemaVersion": 1,
-	"id": "kaleidoscope_doll_workshop",
+	"id": "kaleidoscope_doll_player",
 	"version": "${version}",
-	"name": "Kaleidoscope Doll Workshop",
-	"description": "An add-on for \"Kaleidoscope Doll\" that adds more dolls.",
+	"name": "森罗物语：玩偶·玩家",
+	"description": "An unofficial 26.3 Fabric port of Kaleidoscope Doll Workshop with direct PNG skin links, LittleSkin fallback, and skin snapshots.",
 	"authors": [
 		"Li Suchen"
 	],
 	"contributors": [
 		"ysbb"
 	],
-	"contact": {},
+	"contact": {
+		"sources": "https://github.com/WM-wuming/Kaleidoscope-Doll-Player",
+		"issues": "https://github.com/WM-wuming/Kaleidoscope-Doll-Player/issues"
+	},
 	"license": "GPL-3.0-only",
-	"icon": "assets/kaleidoscope_doll_workshop/textures/item/workshop_icon.png",
+	"icon": "assets/kaleidoscope_doll_player/textures/item/workshop_icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"lsc.kaleidoscopeDollWorkshop.KaleidoscopeDollWorkshop"
+			"lsc.kaleidoscopeDollPlayer.KaleidoscopeDollPlayer"
 		],
 		"client": [
-			"lsc.kaleidoscopeDollWorkshop.KaleidoscopeDollWorkshopClient"
+			"lsc.kaleidoscopeDollPlayer.KaleidoscopeDollPlayerClient"
 		]
 	},
-	"mixins": [],
+	"mixins": [
+		"kaleidoscope_doll_player.mixins.json",
+		{
+			"config": "kaleidoscope_doll_player.client.mixins.json",
+			"environment": "client"
+		}
+	],
 	"depends": {
-		"fabricloader": ">=0.14.21",
-		"minecraft": "1.20.1",
-		"java": ">=17",
+		"fabricloader": ">=0.19",
+		"minecraft": ">=26.3",
+		"java": ">=25",
 		"fabric-api": "*",
-		"geckolib": ">=4.7"
+		"geckolib": ">=5.5.7",
+		"kaleidoscope_doll": "*"
 	}
 }

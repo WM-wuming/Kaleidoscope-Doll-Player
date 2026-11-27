@@ -1,0 +1,21 @@
+{
+  "modmenu.nameTranslation.kaleidoscope_doll_player": "森罗物语：玩偶·玩家",
+  "modmenu.descriptionTranslation.kaleidoscope_doll_player": "为森罗物语：玩偶添加玩家皮肤玩偶。在电脑中放入羊毛并输入玩家名称，即可生成带有该玩家皮肤的玩偶。",
+  "itemGroup.kaleidoscope_doll_player.group": "森罗物语：玩偶·玩家",
+  "item.kaleidoscope_doll_player.player_doll": "玩家玩偶",
+  "tooltip.kaleidoscope_doll_player.player_doll.owner": "玩家：%s",
+  "item.kaleidoscope_doll_player.skin_lock": "玩偶定格片",
+  "tooltip.kaleidoscope_doll_player.skin_lock": "手持右键已摆放的玩家玩偶，或在物品栏拿起玩偶定格片后右键玩家玩偶。",
+  "tooltip.kaleidoscope_doll_player.skin_locked": "皮肤已定格",
+  "message.kaleidoscope_doll_player.skin_lock.pending": "正在保存玩偶皮肤……",
+  "message.kaleidoscope_doll_player.skin_lock.success": "玩偶皮肤已定格。",
+  "message.kaleidoscope_doll_player.skin_lock.already_locked": "这只玩偶的皮肤已经定格。",
+  "message.kaleidoscope_doll_player.skin_lock.unavailable": "无法保存玩偶皮肤，请等玩家皮肤加载后再试。",
+  "message.kaleidoscope_doll_player.skin_lock.cancelled": "玩偶或定格片已移动或改变，未消耗道具。",
+  "gui.kaleidoscope_doll_player.computer.generate": "输入玩家名或皮肤 PNG 直链（留空使用自己的皮肤）。点击生成一只，Shift + 点击用完羊毛。",
+  "gui.kaleidoscope_doll_player.computer.invalid_input": "请输入玩家名，或 HTTP(S) 皮肤 PNG 直链。",
+  "gui.kaleidoscope_doll_player.computer.downloading": "正在下载皮肤……",
+  "gui.kaleidoscope_doll_player.computer.skin_failed": "无法加载皮肤，请使用 64×64 或 64×32 的 PNG 直链，链接不能跳转。",
+  "gui.kaleidoscope_doll_player.computer.wool_required": "请先在电脑的输入槽放入羊毛。",
+  "subtitle.kaleidoscope_doll_player.block.duck_toy": "声音：鸭子玩具"
+}

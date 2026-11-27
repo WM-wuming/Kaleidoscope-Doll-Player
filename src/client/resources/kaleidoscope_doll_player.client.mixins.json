@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "lsc.kaleidoscopeDollPlayer.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "AbstractContainerScreenAccessor",
+    "ComputerMenuScreenMixin",
+    "DollEntityItemModelMixin",
+    "DollEntityRenderMixin",
+    "DollEntityRenderStateMixin",
+    "DollJeiRecipeMakersMixin",
+    "GeckolibItemSpecialRendererMixin",
+    "LivingEntityHelmetDollMixin",
+    "ScreenInvoker"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

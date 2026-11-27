@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "lsc.kaleidoscopeDollPlayer.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "AnvilMenuMixin",
+    "ComputerMenuAccessor",
+    "ComputerMenuMixin",
+    "DollEntityCraftingMixin",
+    "DollEntityItemMixin",
+    "DollEntityOwnerMixin",
+    "DollFunctionRecipeMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

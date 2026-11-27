@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "kaleidoscope_doll_player:player_doll",
+          "modifier": {
+            "type": "minecraft:copy_components",
+            "source": "block_entity",
+            "include": [
+              "minecraft:profile"
+            ]
+          }
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "kaleidoscope_doll_player:blocks/player_doll"
+}
