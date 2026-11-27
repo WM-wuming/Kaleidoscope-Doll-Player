@@ -64,3 +64,49 @@ jobs:
           path: build/libs/kaleidoscope_doll_player-*.jar
           if-no-files-found: error
           retention-days: 14
+
+  release:
+    needs: build
+    if: >-
+      github.repository == 'WM-wuming/Kaleidoscope-Doll-Player' &&
+      github.ref == 'refs/heads/26.3-fabric' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download player mod artifacts
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: kaleidoscope-doll-player-26.3-fabric
+          path: release-artifacts
+
+      - name: Publish build prerelease
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          shopt -s nullglob
+          jars=(release-artifacts/kaleidoscope_doll_player-*.jar)
+          if (( ${#jars[@]} != 2 )); then
+            echo "::error::Expected the player mod JAR and its sources JAR."
+            exit 1
+          fi
+
+          short_sha="${GITHUB_SHA::12}"
+          tag="build-$short_sha"
+          if draft=$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft 2>/dev/null); then
+            if [[ "$draft" == true ]]; then
+              gh release upload "$tag" "${jars[@]}" --repo "$GITHUB_REPOSITORY" --clobber
+              gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --prerelease --draft=false
+            else
+              echo "Release $tag is already published."
+            fi
+            exit 0
+          fi
+
+          gh release create "$tag" "${jars[@]}" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "Kaleidoscope Doll Player | 26.3 Fabric ($short_sha)" \
+            --notes "Automated build of commit $GITHUB_SHA. Requires Kaleidoscope Doll for Minecraft 26.3 Fabric."

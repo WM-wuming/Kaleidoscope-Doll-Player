@@ -28,7 +28,9 @@ macOS / Linux 使用 `./gradlew`。构建产物位于 `build/libs/`。
 
 ### GitHub Actions
 
-推送到 `26.3-fabric` 或向该分支发起 PR 会自动运行 [Build Fabric mod](https://github.com/WM-wuming/Kaleidoscope-Doll-Player/actions/workflows/build.yml)，也可在 Actions 页面手动触发。构建成功后，可在该次运行的 **Artifacts** 区下载 `kaleidoscope-doll-player-26.3-fabric`，内含扩展模组 JAR 和源码 JAR，不含前置 JAR。
+推送到 `26.3-fabric` 或向该分支发起 PR 会自动运行 [Build Fabric mod](https://github.com/WM-wuming/Kaleidoscope-Doll-Player/actions/workflows/build.yml)，也可在 Actions 页面手动触发。
+
+`26.3-fabric` 分支上的推送或手动构建成功后，会在 [Releases](https://github.com/WM-wuming/Kaleidoscope-Doll-Player/releases) 自动发布 `build-<提交短 SHA>` 预发布版，同一提交不重复发布。PR 构建仅提供 Actions **Artifacts**，不会创建 Release。下载内容均为扩展模组 JAR 和源码 JAR，不含前置 JAR。
 
 CI 从公开的 [Kaleidoscope Doll 26.3 Fabric 移植仓库](https://github.com/WM-wuming/KaleidoscopeDoll-26.3-Fabric) 拉取固定提交，先构建前置再构建扩展，不需要额外的仓库密钥。
 
