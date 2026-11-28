@@ -66,8 +66,9 @@ def translate = tasks.register("translateRemappedSources", Sync) {
                             .replace("owner.id()", "owner.getId()")
                             .replace("profile.name()", "profile.getName()")
                             .replace("profile.id()", "profile.getId()")
+                            .replace("first.id(), second.id()", "first.getId(), second.getId()")
+                            .replace("first.name(), second.name()", "first.getName(), second.getName()")
                             .replace(".properties()", ".getProperties()")
-                            .replace("updated.equals(current)", "(updated.equals(current) && updated.getProperties().equals(current.getProperties()))")
                         if (line.contains("new PropertyMap(") || line.contains("new com.mojang.authlib.properties.PropertyMap(") ||
                                 line.contains("return new GameProfile(owner == null")) {
                             line = line.replace("new GameProfile(", "kaleidoscopeDollPlayer.util.LegacyProfiles.create(")

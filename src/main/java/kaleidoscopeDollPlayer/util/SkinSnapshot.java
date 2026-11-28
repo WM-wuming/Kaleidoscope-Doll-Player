@@ -72,11 +72,16 @@ public final class SkinSnapshot {
     }
 
     public static @Nullable Skin skin(@Nullable GameProfile profile) {
+        String payload = textureValue(profile);
+        return payload == null ? null : parse(payload);
+    }
+
+    static @Nullable String textureValue(@Nullable GameProfile profile) {
         if (profile == null) {
             return null;
         }
         var textures = profile.properties().get(TEXTURES).iterator();
-        return textures.hasNext() ? parse(textures.next().value()) : null;
+        return textures.hasNext() ? textures.next().value() : null;
     }
 
     public static @Nullable Skin parse(String payload) {

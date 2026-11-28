@@ -13,6 +13,15 @@ ext.translateLegacyPlayerLine = { String line, String target ->
         .replace("return InteractionResult.CONSUME;", "return net.minecraft.world.InteractionResultHolder.consume(stack);")
         .replace("protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData)", "public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state)")
         .replace("protected RenderShape getRenderShape(", "public RenderShape getRenderShape(")
+        .replace("import net.minecraft.world.level.ScheduledTickAccess;", "import net.minecraft.world.level.LevelAccessor;")
+        .replace("import net.minecraft.util.RandomSource;", "")
+        .replace("public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,",
+            "public BlockState updateShape(BlockState state, Direction direction, BlockState neighbor,")
+        .replace("Direction direction, BlockPos neighborPos, BlockState neighbor, RandomSource random)",
+            "LevelAccessor level, BlockPos pos, BlockPos neighborPos)")
+        .replace("ticks.scheduleTick(pos,", "level.scheduleTick(pos,")
+        .replace("super.updateShape(state, level, ticks, pos, direction, neighborPos, neighbor, random)",
+            "super.updateShape(state, direction, neighbor, level, pos, neighborPos)")
         .replace("protected InteractionResult useItemOn(", "protected net.minecraft.world.ItemInteractionResult useItemOn(")
         .replace("? SkinLockItem.useOnDoll(level, pos, player, hand)", "? net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide())")
         .replace("return stack.is(ModItems.SKIN_LOCK) ? net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide())",

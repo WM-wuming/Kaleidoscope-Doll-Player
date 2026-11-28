@@ -9,6 +9,7 @@ import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +43,13 @@ public final class DollSkinProfiles {
             return null;
         }
         GameProfile updated = resolved.profile().partialProfile();
-        return updated.equals(current) ? null : updated;
+        return sameSkinProfile(updated, current) ? null : updated;
+    }
+
+    public static boolean sameSkinProfile(GameProfile first, GameProfile second) {
+        // Compare texture values rather than Authlib's version-dependent Property equality.
+        return Objects.equals(first.id(), second.id()) && Objects.equals(first.name(), second.name())
+                && Objects.equals(SkinSnapshot.textureValue(first), SkinSnapshot.textureValue(second));
     }
 
     public static CompletableFuture<ResolvableProfile> resolve(MinecraftServer server, String name) {

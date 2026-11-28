@@ -9,7 +9,6 @@ import com.geckolib.animation.object.PlayState;
 import com.geckolib.util.GeckoLibUtil;
 import com.mojang.authlib.GameProfile;
 import kaleidoscopeDollPlayer.block.entity.DollBlockEntity;
-import kaleidoscopeDollPlayer.registry.ModBlocks;
 import kaleidoscopeDollPlayer.registry.ModSounds;
 import kaleidoscopeDollPlayer.util.DollSkinProfiles;
 import kaleidoscopeDollPlayer.util.SkinSnapshot;
@@ -70,9 +69,12 @@ public class DollItem extends com.kaleidoscopedoll.item.DollItem implements GeoI
         BlockPos pos = placementContext.getClickedPos();
 
         if (placementContext.canPlace() && level.getBlockState(pos).canBeReplaced(placementContext)) {
-            BlockState state = ModBlocks.DOLL_BLOCK.getStateForPlacement(placementContext);
+            BlockState state = getPlacementState(placementContext);
+            if (state == null) {
+                return InteractionResult.FAIL;
+            }
 
-            if (state != null && level.setBlock(pos, state, Block.UPDATE_ALL)) {
+            if (level.setBlock(pos, state, Block.UPDATE_ALL)) {
                 BlockEntity be = level.getBlockEntity(pos);
                 if (be instanceof DollBlockEntity dollBe) {
                     GameProfile profile = getGameProfile(context.getItemInHand());
