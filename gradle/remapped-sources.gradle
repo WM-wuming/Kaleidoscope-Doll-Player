@@ -1,4 +1,5 @@
 def target = project.remappedMinecraftTarget
+def immediate = target in ["1.21.8", "1.21.5"]
 def sides = ["main", "client", "gametest"]
 def sources = sides.collectEntries { side -> [(side): sourceSets[side].java.srcDirs] }
 def translate = tasks.register("translateRemappedSources", Sync) {
@@ -9,6 +10,10 @@ def translate = tasks.register("translateRemappedSources", Sync) {
         roots.each { root ->
             from(root) {
                 into(side)
+                if (immediate && side == "client") {
+                    exclude "**/DollEntityRenderMixin.java", "**/DollEntityItemModelMixin.java",
+                            "**/DollEntitySkinRenderer.java", "**/DollJeiRecipeMakersMixin.java"
+                }
                 filter { String line ->
                     line = line.replace("com.geckolib", "software.bernie.geckolib")
                         .replace("Lcom/geckolib/", "Lsoftware/bernie/geckolib/")
@@ -19,7 +24,7 @@ def translate = tasks.register("translateRemappedSources", Sync) {
                         .replace('kaleidoscopeDollPlayer$craftPlayerDollEntity(CraftingInput input,', 'kaleidoscopeDollPlayer$craftPlayerDollEntity(CraftingInput input, net.minecraft.core.HolderLookup.Provider registries,')
                         .replace(".assemble(lockRecipe);", ".assemble(lockRecipe, level.registryAccess());")
                         .replace(".assemble(rideRecipe);", ".assemble(rideRecipe, level.registryAccess());")
-                    if (target == "1.21.10") {
+                    if (target == "1.21.10" || immediate) {
                         line = line.replace("net.minecraft.client.renderer.rendertype.RenderTypes", "net.minecraft.client.renderer.RenderType")
                             .replace("software.bernie.geckolib.animation.AnimationController", "software.bernie.geckolib.animatable.processing.AnimationController")
                             .replace("software.bernie.geckolib.animation.object.PlayState", "software.bernie.geckolib.animation.PlayState")
@@ -32,10 +37,60 @@ def translate = tasks.register("translateRemappedSources", Sync) {
                             .replaceAll(/\bIdentifier\b/, "ResourceLocation")
                             .replace(".identifier()", ".location()")
                     }
+                    if (immediate) {
+                        line = line.replace("import com.kaleidoscopedoll.render.DollEntityRenderState;", "import com.kaleidoscopedoll.render.DollEntityRender.State;")
+                            .replace("@Mixin(value = DollEntityRenderState.class", "@Mixin(value = State.class")
+                            .replace("import com.kaleidoscopedoll.render.DollEntityItemModel;", "import com.kaleidoscopedoll.render.DollEntitySpecialRenderer;")
+                            .replace("DollEntityItemModel.class.getDeclaredMethods()", "DollEntitySpecialRenderer.class.getDeclaredMethods()")
+                            .replace("Lnet/minecraft/world/entity/ItemOwner;", "Lnet/minecraft/world/entity/LivingEntity;")
+                            .replace("minecraft.hasShiftDown()", "net.minecraft.client.gui.screens.Screen.hasShiftDown()")
+                            .replace("addRenderData(DollItem item, RenderData data, GeoRenderState state, float partialTick)", "addRenderData(DollItem item, RenderData data, GeoRenderState state)")
+                            .replace("super.addRenderData(item, data, state, partialTick);", "super.addRenderData(item, data, state);")
+                            .replace("ResolvableProfile.createUnresolved(", "kaleidoscopeDollPlayer.util.LegacyProfiles.unresolved(")
+                            .replace("ResolvableProfile.createResolved(", "new ResolvableProfile(")
+                            .replace("ResolvableProfile::createResolved", "ResolvableProfile::new")
+                            .replace("partialProfile", "gameProfile")
+                            .replace(".resolveProfile(server.services().profileResolver())", ".resolve().thenApply(ResolvableProfile::gameProfile)")
+                            .replace("current.name()", "current.getName()")
+                            .replace("owner.name()", "owner.getName()")
+                            .replace("owner.id()", "owner.getId()")
+                            .replace("profile.name()", "profile.getName()")
+                            .replace("profile.id()", "profile.getId()")
+                            .replace(".properties()", ".getProperties()")
+                            .replace("updated.equals(current)", "(updated.equals(current) && updated.getProperties().equals(current.getProperties()))")
+                        if (line.contains("new PropertyMap(") || line.contains("new com.mojang.authlib.properties.PropertyMap(") ||
+                                line.contains("return new GameProfile(owner == null")) {
+                            line = line.replace("new GameProfile(", "kaleidoscopeDollPlayer.util.LegacyProfiles.create(")
+                                .replace("new PropertyMap(mutable)", "mutable")
+                                .replace("new com.mojang.authlib.properties.PropertyMap(mutable)", "mutable")
+                                .replace("new PropertyMap(ImmutableMultimap.of(TEXTURES, new Property(TEXTURES, payload)))",
+                                    "ImmutableMultimap.of(TEXTURES, new Property(TEXTURES, payload))")
+                        }
+                    }
+                    if (target == "1.21.5") {
+                        line = line.replace("import net.minecraft.world.level.storage.ValueInput;", "")
+                            .replace("import net.minecraft.world.level.storage.ValueOutput;", "")
+                            .replace("saveAdditional(ValueOutput output)", "saveAdditional(CompoundTag output, HolderLookup.Provider registries)")
+                            .replace("loadAdditional(ValueInput input)", "loadAdditional(CompoundTag input, HolderLookup.Provider registries)")
+                            .replace("super.saveAdditional(output);", "super.saveAdditional(output, registries);")
+                            .replace("super.loadAdditional(input);", "super.loadAdditional(input, registries);")
+                            .replace("ValueInput input", "net.minecraft.nbt.CompoundTag input")
+                            .replace("ValueOutput output", "net.minecraft.nbt.CompoundTag output")
+                            .replace("DollItem item, RenderData data, GeoRenderState state", "DollItem item, net.minecraft.world.item.ItemStack data, GeoRenderState state")
+                            .replace("DollItem.getGameProfile(data.itemStack())", "DollItem.getGameProfile(data)")
+                        if (line.contains('+ "Lnet/minecraft/client/renderer/item/ItemStackRenderState;"') ||
+                                line.contains('+ "Lnet/minecraft/world/item/ItemDisplayContext;"') ||
+                                line.contains('+ "Lnet/minecraft/client/multiplayer/ClientLevel;"')) return ""
+                        line = line.replace('Lnet/minecraft/world/entity/LivingEntity;)', ')')
+                    }
                     line
                 }
             }
         }
+    }
+    if (immediate) {
+        from("src/compat/immediate/main") { into("main") }
+        from("src/compat/immediate/client") { into("client") }
     }
     into(layout.buildDirectory.dir("remapped-sources"))
 }
@@ -45,6 +100,13 @@ sides.each { side ->
 
 [tasks.processResources, tasks.processClientResources].each { task ->
     task.filesMatching("*.mixins.json") {
-        filter { String line -> line.replace("JAVA_25", "JAVA_21") }
+        filter { String line ->
+            line = line.replace("JAVA_25", "JAVA_21")
+            if (immediate) {
+                if (line.contains('"DollJeiRecipeMakersMixin"')) return ""
+                line = line.replace('"DollEntityItemModelMixin"', '"DollEntitySpecialRendererMixin"')
+            }
+            line
+        }
     }
 }

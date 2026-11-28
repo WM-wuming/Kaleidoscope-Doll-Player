@@ -9,6 +9,8 @@ plugins {
 
 def target = providers.gradleProperty("minecraftTarget").orElse(project.minecraft_version).get()
 def profiles = [
+	"1.21.5": [api: "0.128.2+1.21.5", gecko: "5.1.0", geckoFile: "AyXpbm2h", config: "fWnEuNPu", nightConfig: "3.8.1", java: 21],
+	"1.21.8": [api: "0.136.1+1.21.8", gecko: "5.2.2", geckoFile: "k4Azk0wN", config: "YbUUjWdw", nightConfig: "3.8.3", java: 21],
 	"1.21.10": [api: "0.138.4+1.21.10", gecko: "5.3-alpha-3", geckoFile: "7qjQQSWv", config: "IKHTwwTv", java: 21],
 	"1.21.11": [api: "0.141.6+1.21.11", gecko: "5.4.6", geckoFile: "OUCukQHN", config: "uXrWPsCu", java: 21],
 	"26.1": [api: "0.145.1+26.1", gecko: "5.5", geckoFile: "yUpAp23B", config: "J2q1Fj7S"],
@@ -90,8 +92,9 @@ dependencies {
 	add(scope, files(providers.gradleProperty("localDollDependency").orElse(
 			"../KaleidoscopeDoll/${upstreamBuild}/libs/kaleidoscopedoll-${target}-fabric-1.4.2-fabric+mc${target}.jar")))
 	add(remapped ? "modLocalRuntime" : "localRuntime", "maven.modrinth:forge-config-api-port:${profile.config}")
-	localRuntime "com.electronwill.night-config:core:3.8.0"
-	localRuntime "com.electronwill.night-config:toml:3.8.0"
+	def nightConfig = profile.nightConfig ?: "3.8.0"
+	localRuntime "com.electronwill.night-config:core:${nightConfig}"
+	localRuntime "com.electronwill.night-config:toml:${nightConfig}"
 }
 
 if (remapped) {
