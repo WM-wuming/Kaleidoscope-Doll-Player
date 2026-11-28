@@ -146,15 +146,25 @@ jobs:
           fi
           jars=()
           versions=()
+          mod_version=
           for directory in "${artifact_dirs[@]}"; do
             target="${directory##*/kaleidoscope-doll-player-}"
             target="${target%-fabric}"
-            mod_jars=("$directory"/kaleidoscope_doll_player-*"+mc$target".jar)
-            sources=("$directory"/kaleidoscope_doll_player-*"+mc$target"-sources.jar)
+            mod_jars=("$directory"/kaleidoscope_doll_player-*"-fabric+mc$target.jar")
+            sources=("$directory"/kaleidoscope_doll_player-*"-fabric+mc$target-sources.jar")
             if (( ${#mod_jars[@]} != 1 || ${#sources[@]} != 1 )); then
               echo "::error::Incomplete artifacts for Minecraft $target."
               exit 1
             fi
+            jar_name="${mod_jars[0]##*/}"
+            jar_version="${jar_name#kaleidoscope_doll_player-}"
+            jar_version="${jar_version%"-fabric+mc$target.jar"}"
+            if [[ -z "$jar_version" || "${sources[0]}" != "${mod_jars[0]%.jar}-sources.jar" ||
+                  ( -n "$mod_version" && "$jar_version" != "$mod_version" ) ]]; then
+              echo "::error::Inconsistent mod version in artifacts for Minecraft $target."
+              exit 1
+            fi
+            mod_version="$jar_version"
             jars+=("${mod_jars[0]}" "${sources[0]}")
             versions+=("$target")
           done
@@ -164,7 +174,7 @@ jobs:
           if draft=$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft 2>/dev/null); then
             if [[ "$draft" == true ]]; then
               gh release upload "$tag" "${jars[@]}" --repo "$GITHUB_REPOSITORY" --clobber
-              gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --prerelease --draft=false
+              gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --title "$mod_version" --prerelease --draft=false
             else
               echo "Release $tag is already published."
             fi
@@ -172,5 +182,5 @@ jobs:
           fi
 
           gh release create "$tag" "${jars[@]}" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
-            --prerelease --title "Kaleidoscope Doll Player | Fabric ($short_sha)" \
+            --prerelease --title "$mod_version" \
             --notes "Automated build of commit $GITHUB_SHA. Minecraft versions: ${versions[*]}. Install the matching Kaleidoscope Doll dependency separately."
