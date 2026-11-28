@@ -2,9 +2,9 @@ name: Build Fabric mod
 
 on:
   push:
-    branches: [26.3-fabric]
+    branches: [fabric]
   pull_request:
-    branches: [26.3-fabric]
+    branches: [fabric]
   workflow_dispatch:
 
 permissions:
@@ -125,7 +125,7 @@ jobs:
     needs: build
     if: >-
       github.repository == 'WM-wuming/Kaleidoscope-Doll-Player' &&
-      github.ref == 'refs/heads/26.3-fabric' &&
+      github.ref == 'refs/heads/fabric' &&
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 5

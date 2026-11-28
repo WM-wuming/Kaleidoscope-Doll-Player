@@ -38,9 +38,9 @@
 
 ### GitHub Actions
 
-推送到 `26.3-fabric` 或向该分支发起 PR 会自动运行 [Build Fabric mod](https://github.com/WM-wuming/Kaleidoscope-Doll-Player/actions/workflows/build.yml)，也可在 Actions 页面手动触发。
+推送到 `fabric` 或向该分支发起 PR 会自动运行 [Build Fabric mod](https://github.com/WM-wuming/Kaleidoscope-Doll-Player/actions/workflows/build.yml)，也可在 Actions 页面手动触发。
 
-`26.3-fabric` 分支上的推送或手动构建通过整个版本矩阵后，会在 [Releases](https://github.com/WM-wuming/Kaleidoscope-Doll-Player/releases) 自动发布预发布版。标题使用模组版本号（例如 `1.0.7`），标签仍为 `build-<提交短 SHA>`，同一提交不重复发布。PR 构建仅提供 Actions **Artifacts**，不会创建 Release。每个版本提供一个扩展模组 JAR 和一个源码 JAR，不含前置 JAR。
+`fabric` 分支上的推送或手动构建通过整个版本矩阵后，会在 [Releases](https://github.com/WM-wuming/Kaleidoscope-Doll-Player/releases) 自动发布预发布版。标题使用模组版本号（例如 `1.0.7`），标签仍为 `build-<提交短 SHA>`，同一提交不重复发布。PR 构建仅提供 Actions **Artifacts**，不会创建 Release。每个版本提供一个扩展模组 JAR 和一个源码 JAR，不含前置 JAR。
 
 CI 从公开的前置仓库拉取固定提交，逐版本构建前置，再构建扩展并运行世界测试，不需要额外的仓库密钥。
 
