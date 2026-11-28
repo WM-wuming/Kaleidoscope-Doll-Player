@@ -11,6 +11,7 @@ def target = providers.gradleProperty("minecraftTarget").orElse(project.minecraf
 def profiles = [
 	"1.21.10": [api: "0.138.4+1.21.10", gecko: "5.3-alpha-3", geckoFile: "7qjQQSWv", config: "IKHTwwTv", java: 21],
 	"1.21.11": [api: "0.141.6+1.21.11", gecko: "5.4.6", geckoFile: "OUCukQHN", config: "uXrWPsCu", java: 21],
+	"26.1": [api: "0.145.1+26.1", gecko: "5.5", geckoFile: "yUpAp23B", config: "J2q1Fj7S"],
 	"26.1.2": [api: "0.155.3+26.1.2", gecko: "5.5.3", geckoFile: "rZnYqWVd", config: "jUe0ucoE"],
 	"26.2": [api: "0.161.0+26.2", gecko: "5.5.7", geckoFile: "FJ4Z5QYo", config: "rSd3GiG8"],
 	"26.3": [api: project.fabric_api_version, gecko: project.geckolib_version, config: "JpKvrr9J"]
@@ -115,7 +116,7 @@ processResources {
 			def entry = pool.entries[0]
 			def condition = pool.remove("condition")
 			pool.conditions = [[condition: condition.type]]
-			if (remapped || target == "26.1.2") pool.bonus_rolls = 0
+			if (remapped || target in ["26.1", "26.1.2"]) pool.bonus_rolls = 0
 			def modifier = entry.remove("modifier")
 			modifier.function = modifier.remove("type")
 			entry.functions = [modifier]

@@ -20,7 +20,7 @@
 
 | Minecraft | Java |
 | --- | --- |
-| 26.3、26.2、26.1.2 | 25 |
+| 26.3、26.2、26.1.2、26.1 | 25 |
 | 1.21.11、1.21.10 | 21 |
 
 请安装与游戏版本匹配的本扩展、Kaleidoscope Doll、Fabric Loader、Fabric API、GeckoLib 和 Forge Config API Port。多人游戏请在客户端和服务端都安装本扩展及前置。
@@ -49,7 +49,7 @@ CI 从公开的前置仓库拉取固定提交，逐版本构建前置，再构�
 
 ## English
 
-An unofficial Minecraft Fabric port of **Kaleidoscope Doll Workshop** by **Li Suchen**, based on the original `1.20.1-fabric` branch. It requires the separate **Kaleidoscope Doll Refabricated** mod for the same Minecraft version. Builds and world tests have passed for **26.3, 26.2, 26.1.2, 1.21.11, and 1.21.10**.
+An unofficial Minecraft Fabric port of **Kaleidoscope Doll Workshop** by **Li Suchen**, based on the original `1.20.1-fabric` branch. It requires the separate **Kaleidoscope Doll Refabricated** mod for the same Minecraft version. Builds and world tests have passed for **26.3, 26.2, 26.1.2, 26.1, 1.21.11, and 1.21.10**.
 
 The port uses the base mod's computer instead of a separate Workshop Computer. Insert wool and enter a player name or a direct HTTP(S) skin PNG URL, then click **✔**; leave the field blank for your own skin, or Shift-click to use all the wool. Minecraft accounts take priority over LittleSkin. Direct URLs are stored with the doll and must return a `64×64` or `64×32` PNG without redirects.
 
