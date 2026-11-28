@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "lsc.kaleidoscopeDollPlayer.mixin",
+  "package": "kaleidoscopeDollPlayer.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
     "AbstractContainerScreenAccessor",

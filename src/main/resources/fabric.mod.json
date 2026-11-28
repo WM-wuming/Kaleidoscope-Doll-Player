@@ -19,10 +19,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"lsc.kaleidoscopeDollPlayer.KaleidoscopeDollPlayer"
+			"kaleidoscopeDollPlayer.KaleidoscopeDollPlayer"
 		],
 		"client": [
-			"lsc.kaleidoscopeDollPlayer.KaleidoscopeDollPlayerClient"
+			"kaleidoscopeDollPlayer.KaleidoscopeDollPlayerClient"
 		]
 	},
 	"mixins": [
