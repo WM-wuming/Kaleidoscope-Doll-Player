@@ -1,0 +1,50 @@
+def target = project.remappedMinecraftTarget
+def sides = ["main", "client", "gametest"]
+def sources = sides.collectEntries { side -> [(side): sourceSets[side].java.srcDirs] }
+def translate = tasks.register("translateRemappedSources", Sync) {
+    inputs.file(layout.projectDirectory.file("gradle/remapped-sources.gradle"))
+    inputs.property("minecraft", target)
+    filteringCharset = "UTF-8"
+    sources.each { side, roots ->
+        roots.each { root ->
+            from(root) {
+                into(side)
+                filter { String line ->
+                    line = line.replace("com.geckolib", "software.bernie.geckolib")
+                        .replace("Lcom/geckolib/", "Lsoftware/bernie/geckolib/")
+                        .replace("PayloadTypeRegistry.serverboundPlay()", "PayloadTypeRegistry.playC2S()")
+                        .replace("net.minecraft.client.renderer.state.level.CameraRenderState", "net.minecraft.client.renderer.state.CameraRenderState")
+                        .replace("new GeoBlockRenderer<>(ctx, new DollBlockModel())", "new GeoBlockRenderer<>(new DollBlockModel())")
+                        .replaceAll(/\.sendOverlayMessage\((.*)\);/, '.displayClientMessage($1, true);')
+                        .replace('kaleidoscopeDollPlayer$craftPlayerDollEntity(CraftingInput input,', 'kaleidoscopeDollPlayer$craftPlayerDollEntity(CraftingInput input, net.minecraft.core.HolderLookup.Provider registries,')
+                        .replace(".assemble(lockRecipe);", ".assemble(lockRecipe, level.registryAccess());")
+                        .replace(".assemble(rideRecipe);", ".assemble(rideRecipe, level.registryAccess());")
+                    if (target == "1.21.10") {
+                        line = line.replace("net.minecraft.client.renderer.rendertype.RenderTypes", "net.minecraft.client.renderer.RenderType")
+                            .replace("software.bernie.geckolib.animation.AnimationController", "software.bernie.geckolib.animatable.processing.AnimationController")
+                            .replace("software.bernie.geckolib.animation.object.PlayState", "software.bernie.geckolib.animation.PlayState")
+                            .replace(".isWithinBlockInteractionRange(", ".canInteractWithBlock(")
+                            .replace("org.jspecify.annotations.Nullable", "org.jetbrains.annotations.Nullable")
+                            .replace("DollBlockEntity animatable, @Nullable Object relatedObject, GeoRenderState renderState", "DollBlockEntity animatable, GeoRenderState renderState")
+                            .replace("renderer.internal.GeckolibItemSpecialRenderer", "renderer.base.GeckolibItemSpecialRenderer")
+                            .replace("renderer/internal/GeckolibItemSpecialRenderer", "renderer/base/GeckolibItemSpecialRenderer")
+                            .replace("RenderTypes.", "RenderType.")
+                            .replaceAll(/\bIdentifier\b/, "ResourceLocation")
+                            .replace(".identifier()", ".location()")
+                    }
+                    line
+                }
+            }
+        }
+    }
+    into(layout.buildDirectory.dir("remapped-sources"))
+}
+sides.each { side ->
+    sourceSets[side].java.setSrcDirs([translate.map { it.destinationDir.toPath().resolve(side).toFile() }])
+}
+
+[tasks.processResources, tasks.processClientResources].each { task ->
+    task.filesMatching("*.mixins.json") {
+        filter { String line -> line.replace("JAVA_25", "JAVA_21") }
+    }
+}

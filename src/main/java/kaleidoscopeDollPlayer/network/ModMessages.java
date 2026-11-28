@@ -1,6 +1,7 @@
 package kaleidoscopeDollPlayer.network;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.inventory.ComputerMenu;
+import com.kaleidoscopedoll.compat.DollInventory;
+import com.kaleidoscopedoll.inventory.ComputerMenu;
 import kaleidoscopeDollPlayer.KaleidoscopeDollPlayer;
 import kaleidoscopeDollPlayer.item.DollItem;
 import kaleidoscopeDollPlayer.mixin.ComputerMenuAccessor;
@@ -20,7 +21,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -175,7 +175,7 @@ public class ModMessages {
     private static void giveDolls(ServerPlayer player, ItemStack dolls) {
         player.getInventory().add(dolls);
         if (!dolls.isEmpty()) {
-            player.drop(dolls, false, Prediction.PREDICTED);
+            DollInventory.drop(player, dolls);
         }
     }
 

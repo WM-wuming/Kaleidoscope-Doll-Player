@@ -1,8 +1,9 @@
 package kaleidoscopeDollPlayer.mixin;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.render.DollEntityRender;
-import com.github.ysbbbbbb.kaleidoscopedoll.render.DollEntityRenderState;
-import com.github.ysbbbbbb.kaleidoscopedoll.entity.DollEntity;
+import com.kaleidoscopedoll.compat.DollBlockSubmission;
+import com.kaleidoscopedoll.render.DollEntityRender;
+import com.kaleidoscopedoll.render.DollEntityRenderState;
+import com.kaleidoscopedoll.entity.DollEntity;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import kaleidoscopeDollPlayer.duck.PlayerDollEntity;
@@ -10,6 +11,7 @@ import kaleidoscopeDollPlayer.duck.PlayerDollRenderState;
 import kaleidoscopeDollPlayer.renderer.DollEntitySkinRenderer;
 import kaleidoscopeDollPlayer.registry.ModBlocks;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
 import net.minecraft.client.renderer.block.MovingBlockRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,16 +37,16 @@ public class DollEntityRenderMixin {
 
     @Redirect(method = "submit",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitMovingBlock(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/block/MovingBlockRenderState;I)V"),
+                    target = "Lcom/kaleidoscopedoll/compat/DollBlockSubmission;submit(Lnet/minecraft/client/renderer/OrderedSubmitNodeCollector;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/block/MovingBlockRenderState;I)V"),
             remap = true)
-    private void kaleidoscopeDollPlayer$renderSkinBody(SubmitNodeCollector instance, PoseStack poseStack,
+    private void kaleidoscopeDollPlayer$renderSkinBody(OrderedSubmitNodeCollector instance, PoseStack poseStack,
                                                          MovingBlockRenderState movingBlockRenderState, int outlineColor,
                                                          DollEntityRenderState state, PoseStack outerPoseStack,
                                                          SubmitNodeCollector collector, CameraRenderState camera) {
         GameProfile profile = ((PlayerDollRenderState) state).kaleidoscopeDollPlayer$getOwnerProfile();
         if (profile == null || movingBlockRenderState.blockState.getBlock() != ModBlocks.DOLL_BLOCK) {
             // 非本 mod 玩偶：走上游原逻辑
-            instance.submitMovingBlock(poseStack, movingBlockRenderState, outlineColor);
+            DollBlockSubmission.submit(instance, poseStack, movingBlockRenderState, outlineColor);
             return;
         }
         DollEntitySkinRenderer.render(profile, poseStack, collector, state.lightCoords);

@@ -139,12 +139,10 @@ public class DollBlock extends Block implements EntityBlock, SimpleWaterloggedBl
         return RenderShape.MODEL;
     }
 
-    // 打掉玩偶时不播放方块破坏粒子
-    @Override
+    // These hooks are available starting in 26.3.
     public void spawnDestroyParticles(Level level, BlockPos pos, BlockState state) {
     }
 
-    @Override
     public void spawnDestroyByEntityParticles(Level level, net.minecraft.world.entity.Entity entity, BlockPos pos, BlockState state) {
     }
 

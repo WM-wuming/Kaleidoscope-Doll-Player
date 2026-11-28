@@ -1,5 +1,6 @@
 package kaleidoscopeDollPlayer.item;
 
+import com.kaleidoscopedoll.compat.DollInventory;
 import com.mojang.authlib.GameProfile;
 import kaleidoscopeDollPlayer.block.entity.DollBlockEntity;
 import kaleidoscopeDollPlayer.registry.ModItems;
@@ -8,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -54,7 +54,7 @@ public final class SkinLockItem extends Item {
                 } else {
                     ItemStack single = doll.split(1);
                     single.set(DataComponents.PROFILE, profile);
-                    player.getInventory().placeItemBackInInventory(single, Prediction.SERVER_ONLY);
+                    DollInventory.returnToInventory(player, single);
                 }
                 slot.setChanged();
             });

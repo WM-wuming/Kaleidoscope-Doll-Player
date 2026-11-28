@@ -1,6 +1,6 @@
 package kaleidoscopeDollPlayer.mixin;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.init.ModDataComponent;
+import com.kaleidoscopedoll.init.ModDataComponent;
 import kaleidoscopeDollPlayer.KaleidoscopeDollPlayer;
 import kaleidoscopeDollPlayer.registry.ModDataComponents;
 import kaleidoscopeDollPlayer.registry.ModItems;

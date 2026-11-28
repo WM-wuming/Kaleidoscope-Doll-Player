@@ -1,6 +1,6 @@
 package kaleidoscopeDollPlayer.mixin;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.inventory.ComputerMenu;
+import com.kaleidoscopedoll.inventory.ComputerMenu;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
@@ -35,14 +35,14 @@ public abstract class ComputerMenuMixin extends AbstractContainerMenu {
     }
 
     @Inject(method = "<init>", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER,
-            target = "Lcom/github/ysbbbbbb/kaleidoscopedoll/inventory/ComputerMenu;output:Lnet/minecraft/world/SimpleContainer;"))
+            target = "Lcom/kaleidoscopedoll/inventory/ComputerMenu;output:Lnet/minecraft/world/SimpleContainer;"))
     private void kaleidoscopeDollPlayer$allowPaidBatches(int id, net.minecraft.world.entity.player.Inventory inventory,
                                                           CallbackInfo ci) {
         output = ComputerDollSlot.createOutput();
     }
 
     @WrapOperation(method = "<init>", at = @At(value = "INVOKE",
-            target = "Lcom/github/ysbbbbbb/kaleidoscopedoll/inventory/ComputerMenu;addSlot(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;"))
+            target = "Lcom/kaleidoscopedoll/inventory/ComputerMenu;addSlot(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;"))
     private Slot kaleidoscopeDollPlayer$wrapComputerSlots(ComputerMenu menu, Slot slot, Operation<Slot> original) {
         if (slot.container == input || slot.container == output) {
             slot = new ComputerDollSlot(slot, output);
@@ -51,7 +51,7 @@ public abstract class ComputerMenuMixin extends AbstractContainerMenu {
     }
 
     @ModifyArg(method = "quickMoveStack", at = @At(value = "INVOKE",
-            target = "Lcom/github/ysbbbbbb/kaleidoscopedoll/inventory/ComputerMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
+            target = "Lcom/kaleidoscopedoll/inventory/ComputerMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z",
             ordinal = 1), index = 2)
     private int kaleidoscopeDollPlayer$shiftIntoInputOnly(int endIndex) {
         return 1;

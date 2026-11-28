@@ -1,6 +1,6 @@
 package kaleidoscopeDollPlayer.mixin;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.client.gui.ComputerMenuScreen;
+import com.kaleidoscopedoll.client.gui.ComputerMenuScreen;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import kaleidoscopeDollPlayer.network.ModMessages;
@@ -93,7 +93,8 @@ public abstract class ComputerMenuScreenMixin {
         minecraft.player.sendOverlayMessage(Component.translatable("gui.kaleidoscope_doll_player.computer.downloading"));
         SkinImages.download(url).whenComplete((png, error) -> minecraft.execute(() -> {
             this.kaleidoscopeDollPlayer$downloading = false;
-            if (minecraft.gui.screen() != screen || minecraft.getConnection() != connection || minecraft.player == null) {
+            if (minecraft.getConnection() != connection || minecraft.player == null
+                    || minecraft.player.containerMenu != screen.getMenu()) {
                 return;
             }
             if (error != null) {

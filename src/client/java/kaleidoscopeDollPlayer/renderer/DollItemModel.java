@@ -1,13 +1,11 @@
 package kaleidoscopeDollPlayer.renderer;
 
 import com.geckolib.model.GeoModel;
-import com.geckolib.renderer.GeoItemRenderer;
 import com.geckolib.renderer.base.GeoRenderState;
 import com.mojang.authlib.GameProfile;
 import kaleidoscopeDollPlayer.KaleidoscopeDollPlayer;
 import kaleidoscopeDollPlayer.item.DollItem;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.Nullable;
 
 public class DollItemModel extends GeoModel<DollItem> {
     private static final Identifier STEVE_MODEL = Identifier.fromNamespaceAndPath(KaleidoscopeDollPlayer.MOD_ID, "steve");
@@ -30,13 +28,4 @@ public class DollItemModel extends GeoModel<DollItem> {
         return EMPTY_ANIMATION;
     }
 
-    @Override
-    public void addAdditionalStateData(DollItem animatable, @Nullable Object relatedObject, GeoRenderState renderState) {
-        if (relatedObject instanceof GeoItemRenderer.RenderData renderData) {
-            GameProfile profile = DollItem.getGameProfile(renderData.itemStack());
-            if (profile != null) {
-                renderState.addGeckolibData(SkinTextureCache.PROFILE_TICKET, profile);
-            }
-        }
-    }
 }

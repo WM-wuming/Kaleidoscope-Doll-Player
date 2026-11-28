@@ -1,8 +1,8 @@
 package kaleidoscopeDollPlayer.mixin;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.init.ModDataComponent;
-import com.github.ysbbbbbb.kaleidoscopedoll.item.DollEntityItem;
-import com.github.ysbbbbbb.kaleidoscopedoll.item.crafting.DollEntityCraftingRecipe;
+import com.kaleidoscopedoll.init.ModDataComponent;
+import com.kaleidoscopedoll.item.DollEntityItem;
+import com.kaleidoscopedoll.item.crafting.DollEntityCraftingRecipe;
 import com.mojang.authlib.GameProfile;
 import kaleidoscopeDollPlayer.duck.PlayerDollEntity;
 import kaleidoscopeDollPlayer.item.DollItem;

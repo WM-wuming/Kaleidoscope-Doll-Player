@@ -1,9 +1,9 @@
 package kaleidoscopeDollPlayer.mixin;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.entity.DollEntity;
-import com.github.ysbbbbbb.kaleidoscopedoll.init.ModDataComponent;
-import com.github.ysbbbbbb.kaleidoscopedoll.init.ModItems;
-import com.github.ysbbbbbb.kaleidoscopedoll.item.DollEntityItem;
+import com.kaleidoscopedoll.entity.DollEntity;
+import com.kaleidoscopedoll.init.ModDataComponent;
+import com.kaleidoscopedoll.init.ModItems;
+import com.kaleidoscopedoll.item.DollEntityItem;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;

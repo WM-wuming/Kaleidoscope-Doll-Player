@@ -1,6 +1,7 @@
 package kaleidoscopeDollPlayer.renderer;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.client.bedrock.BedrockModel;
+import com.kaleidoscopedoll.client.bedrock.BedrockModel;
+import com.kaleidoscopedoll.compat.DollPoseStack;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -35,8 +36,8 @@ public final class DollEntitySkinRenderer {
         poseStack.pushPose();
         // 与上游 renderCustom 相同的模型坐标变换
         poseStack.translate(0.5, 1.5, 0.5);
-        poseStack.rotate(Axis.ZN.rotationDegrees(180));
-        poseStack.rotate(Axis.YN.rotationDegrees(180));
+        DollPoseStack.rotate(poseStack, Axis.ZN.rotationDegrees(180));
+        DollPoseStack.rotate(poseStack, Axis.YN.rotationDegrees(180));
 
         final BedrockModel finalModel = model;
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture), (pose, buffer) -> {

@@ -1,6 +1,6 @@
 package kaleidoscopeDollPlayer.menu;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.datagen.TagItem;
+import com.kaleidoscopedoll.datagen.TagItem;
 import kaleidoscopeDollPlayer.network.ModMessages;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.SimpleContainer;

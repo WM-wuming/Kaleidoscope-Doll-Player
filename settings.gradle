@@ -10,3 +10,9 @@ pluginManagement {
 }
 
 rootProject.name = 'Kaleidoscope-Doll-Player'
+
+def target = providers.gradleProperty("minecraftTarget").orNull
+if (target != null && target != "26.3" && target ==~ /\d+\.\d+(?:\.\d+)?/ &&
+		gradle.startParameter.projectCacheDir == null) {
+	gradle.startParameter.projectCacheDir = new File(settingsDir, ".gradle/minecraft-${target}")
+}

@@ -1,8 +1,8 @@
 package kaleidoscopeDollPlayer.mixin;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.init.ModDataComponent;
-import com.github.ysbbbbbb.kaleidoscopedoll.item.DollEntityItem;
-import com.github.ysbbbbbb.kaleidoscopedoll.render.DollEntityItemModel;
+import com.kaleidoscopedoll.init.ModDataComponent;
+import com.kaleidoscopedoll.item.DollEntityItem;
+import com.kaleidoscopedoll.render.DollEntityItemModel;
 import com.google.common.cache.CacheBuilder;
 import kaleidoscopeDollPlayer.duck.PlayerDollEntity;
 import kaleidoscopeDollPlayer.registry.ModBlocks;

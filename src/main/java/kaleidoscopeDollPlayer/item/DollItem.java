@@ -41,11 +41,11 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import java.util.function.Consumer;
 
 /**
- * 玩家皮肤玩偶物品。继承上游 com.github.ysbbbbbb.kaleidoscopedoll.item.DollItem：
+ * 玩家皮肤玩偶物品。继承上游 com.kaleidoscopedoll.item.DollItem：
  * 上游的功能合成（图腾/雪球/鸡蛋/末影珍珠/风弹）、实体玩偶合成（粘液球）、
  * 铁砧头盔+玩偶、抛射物粒子修正等系统均按 instanceof DollItem 判断，继承后自动生效。
  */
-public class DollItem extends com.github.ysbbbbbb.kaleidoscopedoll.item.DollItem implements GeoItem {
+public class DollItem extends com.kaleidoscopedoll.item.DollItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public final MutableObject<Object> geoRenderProvider = new MutableObject<>();
 

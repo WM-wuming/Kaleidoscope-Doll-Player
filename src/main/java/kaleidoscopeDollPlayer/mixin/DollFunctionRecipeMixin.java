@@ -1,6 +1,6 @@
 package kaleidoscopeDollPlayer.mixin;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.item.crafting.DollFunctionRecipe;
+import com.kaleidoscopedoll.item.crafting.DollFunctionRecipe;
 import kaleidoscopeDollPlayer.registry.ModItems;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;

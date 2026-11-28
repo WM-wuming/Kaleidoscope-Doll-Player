@@ -1,6 +1,6 @@
 package kaleidoscopeDollPlayer.mixin;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.render.DollEntityRenderState;
+import com.kaleidoscopedoll.render.DollEntityRenderState;
 import com.mojang.authlib.GameProfile;
 import kaleidoscopeDollPlayer.duck.PlayerDollRenderState;
 import org.jetbrains.annotations.Nullable;

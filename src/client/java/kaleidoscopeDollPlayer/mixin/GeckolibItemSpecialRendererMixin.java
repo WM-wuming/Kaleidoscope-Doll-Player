@@ -1,7 +1,7 @@
 package kaleidoscopeDollPlayer.mixin;
 
 import com.geckolib.renderer.internal.GeckolibItemSpecialRenderer;
-import com.github.ysbbbbbb.kaleidoscopedoll.item.crafting.DollFunctionRecipe;
+import com.kaleidoscopedoll.item.crafting.DollFunctionRecipe;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import kaleidoscopeDollPlayer.registry.ModItems;

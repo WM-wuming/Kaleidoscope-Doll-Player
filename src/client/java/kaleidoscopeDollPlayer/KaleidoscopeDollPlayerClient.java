@@ -8,7 +8,7 @@ import kaleidoscopeDollPlayer.item.DollItem;
 import kaleidoscopeDollPlayer.registry.ModBlockEntities;
 import kaleidoscopeDollPlayer.registry.ModItems;
 import kaleidoscopeDollPlayer.renderer.DollBlockModel;
-import kaleidoscopeDollPlayer.renderer.DollItemModel;
+import kaleidoscopeDollPlayer.renderer.DollItemRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ public class KaleidoscopeDollPlayerClient implements ClientModInitializer {
         // 注册物品动态渲染器（special model 由 GeckoLib 内部自动注册，物品 JSON 指向 geckolib:geckolib）
         ModItems.PLAYER_DOLL.geoRenderProvider.setValue(new GeoRenderProvider() {
             private final Supplier<GeoItemRenderer<DollItem>> renderer =
-                    Suppliers.memoize(() -> new GeoItemRenderer<>(new DollItemModel()));
+                    Suppliers.memoize(DollItemRenderer::new);
 
             @Override
             public @Nullable GeoItemRenderer<DollItem> getGeoItemRenderer() {

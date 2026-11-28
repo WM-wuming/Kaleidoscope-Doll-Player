@@ -1,6 +1,6 @@
 package kaleidoscopeDollPlayer.mixin;
 
-import com.github.ysbbbbbb.kaleidoscopedoll.entity.DollEntity;
+import com.kaleidoscopedoll.entity.DollEntity;
 import com.mojang.authlib.GameProfile;
 import kaleidoscopeDollPlayer.duck.PlayerDollEntity;
 import net.minecraft.network.syncher.EntityDataAccessor;

@@ -2,6 +2,7 @@ package kaleidoscopeDollPlayer.registry;
 
 import kaleidoscopeDollPlayer.KaleidoscopeDollPlayer;
 import kaleidoscopeDollPlayer.block.entity.DollBlockEntity;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -14,7 +15,7 @@ public class ModBlockEntities {
         DOLL_BLOCK_ENTITY = Registry.register(
                 BuiltInRegistries.BLOCK_ENTITY_TYPE,
                 Identifier.fromNamespaceAndPath(KaleidoscopeDollPlayer.MOD_ID, "doll_block_entity"),
-                new BlockEntityType<>(DollBlockEntity::new, java.util.Set.of(ModBlocks.DOLL_BLOCK))
+                FabricBlockEntityTypeBuilder.create(DollBlockEntity::new, ModBlocks.DOLL_BLOCK).build()
         );
     }
 }
