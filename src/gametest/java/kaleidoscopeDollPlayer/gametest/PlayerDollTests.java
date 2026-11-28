@@ -1,9 +1,12 @@
 package kaleidoscopeDollPlayer.gametest;
 
 import com.kaleidoscopedoll.inventory.ComputerMenu;
+import com.kaleidoscopedoll.init.ModDataComponent;
 import com.kaleidoscopedoll.item.DollEntityItem;
 import com.kaleidoscopedoll.item.crafting.DollFunctionRecipe;
 import kaleidoscopeDollPlayer.block.entity.DollBlockEntity;
+import kaleidoscopeDollPlayer.duck.PlayerDollEntity;
+import kaleidoscopeDollPlayer.item.DollItem;
 import kaleidoscopeDollPlayer.menu.ComputerDollSlot;
 import kaleidoscopeDollPlayer.registry.ModBlocks;
 import kaleidoscopeDollPlayer.registry.ModItems;
@@ -14,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -59,11 +63,11 @@ public final class PlayerDollTests {
         doll.setOwnerProfile(profile);
         var drops = Block.getDrops(level.getBlockState(pos), level, pos, doll);
         check(drops.size() == 1 && drops.getFirst().is(ModItems.PLAYER_DOLL), "Block did not drop a player doll");
-        var droppedProfile = drops.getFirst().get(DataComponents.PROFILE);
-        check(droppedProfile != null && SkinSnapshot.isLocked(droppedProfile.partialProfile()), "Block drop lost the skin");
+        check(SkinSnapshot.isLocked(DollItem.getGameProfile(drops.getFirst())), "Block drop lost the skin");
 
         var totem = DollFunctionRecipe.assembleResult(drops.getFirst(), new ItemStack(Items.TOTEM_OF_UNDYING));
-        check(DollFunctionRecipe.isDollTotem(totem) && totem.has(DataComponents.PROFILE), "Totem lost its doll model or skin");
+        check(DollFunctionRecipe.isDollTotem(totem) && SkinSnapshot.isLocked(DollItem.getGameProfile(totem)),
+                "Totem lost its doll model or skin");
 
         var recipes = level.getServer().getRecipeManager();
         var lockRecipe = CraftingInput.of(2, 1, List.of(new ItemStack(Items.PAPER), new ItemStack(Items.AMETHYST_SHARD)));
@@ -72,6 +76,9 @@ public final class PlayerDollTests {
         var rideRecipe = CraftingInput.of(2, 1, List.of(drops.getFirst(), new ItemStack(Items.SLIME_BALL)));
         var ride = recipes.getRecipeFor(RecipeType.CRAFTING, rideRecipe, level).orElseThrow().value().assemble(rideRecipe);
         check(DollEntityItem.getBlockFromItemStack(ride) == ModBlocks.DOLL_BLOCK, "Rideable recipe lost its doll");
+        var riderData = ride.get(ModDataComponent.TAG_DOLL_ENTITY);
+        check(riderData != null && StringTag.valueOf(PlayerDollEntity.encodeProfile(profile)).equals(riderData.get(PlayerDollEntity.OWNER_TAG)),
+                "Rideable recipe lost its skin");
         test.succeed();
     }
 

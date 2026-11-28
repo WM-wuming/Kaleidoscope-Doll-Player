@@ -61,17 +61,14 @@ public final class SkinSnapshot {
     }
 
     public static CompletableFuture<GameProfile> lock(GameProfile profile) {
-        switch (skin(profile)) {
-            case Embedded skin -> {
-                return CompletableFuture.completedFuture(create(profile, skin.png(), skin.slim()));
-            }
-            case Remote skin -> {
-                return SkinImages.download(skin.url()).thenApply(png -> create(profile, png, skin.slim()));
-            }
-            case null -> {
-                return CompletableFuture.failedFuture(new IllegalArgumentException("No available skin"));
-            }
+        Skin current = skin(profile);
+        if (current instanceof Embedded skin) {
+            return CompletableFuture.completedFuture(create(profile, skin.png(), skin.slim()));
         }
+        if (current instanceof Remote skin) {
+            return SkinImages.download(skin.url()).thenApply(png -> create(profile, png, skin.slim()));
+        }
+        return CompletableFuture.failedFuture(new IllegalArgumentException("No available skin"));
     }
 
     public static @Nullable Skin skin(@Nullable GameProfile profile) {

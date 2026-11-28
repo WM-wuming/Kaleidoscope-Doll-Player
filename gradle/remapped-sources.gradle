@@ -1,10 +1,14 @@
 def target = project.remappedMinecraftTarget
-def geckoFour = target == "1.21.4"
+def legacyModels = target in ["1.20.1", "1.20.2", "1.20.4", "1.20.6", "1.21", "1.21.1"]
+def legacyNbt = target in ["1.20.1", "1.20.2", "1.20.4"]
+def geckoFour = target == "1.21.4" || legacyModels
 def immediate = target in ["1.21.8", "1.21.5"] || geckoFour
+if (legacyModels) apply from: 'gradle/legacy-player-sources.gradle'
 def sides = ["main", "client", "gametest"]
 def sources = sides.collectEntries { side -> [(side): sourceSets[side].java.srcDirs] }
 def translate = tasks.register("translateRemappedSources", Sync) {
     inputs.file(layout.projectDirectory.file("gradle/remapped-sources.gradle"))
+    if (legacyModels) inputs.file(layout.projectDirectory.file("gradle/legacy-player-sources.gradle"))
     inputs.property("minecraft", target)
     filteringCharset = "UTF-8"
     sources.each { side, roots ->
@@ -16,6 +20,10 @@ def translate = tasks.register("translateRemappedSources", Sync) {
                             "**/DollEntitySkinRenderer.java", "**/DollJeiRecipeMakersMixin.java"
                     if (geckoFour) exclude "**/DollBlockModel.java", "**/DollItemModel.java", "**/DollItemRenderer.java"
                 }
+                if (legacyModels && side == "client") exclude "**/DollEntityRenderStateMixin.java",
+                        "**/GeckolibItemSpecialRendererMixin.java", "**/LivingEntityHelmetDollMixin.java"
+                if (legacyModels && side == "gametest") exclude "**/PlayerDollClientTest.java"
+                if (legacyNbt && side == "main") exclude "**/ModDataComponents.java"
                 filter { String line ->
                     line = line.replace("com.geckolib", "software.bernie.geckolib")
                         .replace("Lcom/geckolib/", "Lsoftware/bernie/geckolib/")
@@ -113,27 +121,49 @@ def translate = tasks.register("translateRemappedSources", Sync) {
                             .replace("import software.bernie.geckolib.constant.dataticket.DataTicket;", "")
                         if (line.contains("public static final DataTicket<GameProfile>")) return ""
                     }
-                    line
+                    legacyModels ? translateLegacyPlayerLine(line, target) : line
                 }
             }
         }
     }
     if (immediate) {
-        from("src/compat/immediate/main") { into("main") }
+        from(legacyNbt ? "src/compat/legacy-nbt/main" : "src/compat/immediate/main") { into("main") }
         from("src/compat/immediate/client") {
             into("client")
+            if (legacyModels) exclude "**/DollEntityRenderMixin.java", "**/DollEntitySpecialRendererMixin.java"
             if (geckoFour) {
                 filter { String line ->
-                    line.replace("tag.getString(PlayerDollEntity.OWNER_TAG).map(",
+                    line = line.replace("tag.getString(PlayerDollEntity.OWNER_TAG).map(",
                         "java.util.Optional.of(tag.getString(PlayerDollEntity.OWNER_TAG)).filter(value -> !value.isEmpty()).map(")
+                    legacyModels ? translateLegacyPlayerLine(line, target) : line
                 }
             }
         }
     }
     if (geckoFour) {
-        from("src/compat/gecko4/client") { into("client") }
+        from("src/compat/gecko4/client") {
+            into("client")
+            if (legacyModels) {
+                exclude "**/LegacyDollModel.java", "**/DollItemRenderer.java", "**/DollBlockModel.java"
+            }
+        }
+    }
+    if (legacyModels) {
+        from("src/compat/legacy/client") {
+            into("client")
+            filter { String line -> translateLegacyPlayerLine(line, target) }
+        }
+        from("src/compat/legacy/gametest") { into("gametest") }
     }
     into(layout.buildDirectory.dir("remapped-sources"))
+}
+if (legacyModels) {
+    tasks.processGametestResources.filesMatching("fabric.mod.json") {
+        filter { String line ->
+            line.replace('"fabric-client-gametest": ["kaleidoscopeDollPlayer.gametest.PlayerDollClientTest"]',
+                '"client": ["kaleidoscopeDollPlayer.gametest.LegacyClientSmoke"]')
+        }
+    }
 }
 sides.each { side ->
     sourceSets[side].java.setSrcDirs([translate.map { it.destinationDir.toPath().resolve(side).toFile() }])
@@ -142,7 +172,13 @@ sides.each { side ->
 [tasks.processResources, tasks.processClientResources].each { task ->
     task.filesMatching("*.mixins.json") {
         filter { String line ->
-            line = line.replace("JAVA_25", "JAVA_21")
+            line = line.replace("JAVA_25", legacyNbt ? "JAVA_17" : "JAVA_21")
+            if (legacyModels) {
+                if (line.contains('"DollEntityRenderStateMixin"') || line.contains('"GeckolibItemSpecialRendererMixin"')) return ""
+                line = line.replace('"LivingEntityHelmetDollMixin"', '"LegacyHeadLayerMixin"')
+                    .replace('"DollEntityItemModelMixin"', '"LegacyDollItemsMixin"')
+                    .replace('"LegacyDollItemsMixin",', '"LegacyDollItemsMixin",\n    "LegacyFunctionItemRendererMixin",')
+            }
             if (immediate) {
                 if (line.contains('"DollJeiRecipeMakersMixin"')) return ""
                 line = line.replace('"DollEntityItemModelMixin"', '"DollEntitySpecialRendererMixin"')

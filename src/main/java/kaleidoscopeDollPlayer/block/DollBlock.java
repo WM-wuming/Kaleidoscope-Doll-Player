@@ -74,8 +74,7 @@ public class DollBlock extends Block implements EntityBlock, SimpleWaterloggedBl
     }
 
     // 右键交互：播放声音和粒子，玩偶收缩一下（不挥动手臂）
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    @Override protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide() && level instanceof ServerLevel serverLevel) {
             spawnParticles(serverLevel, pos);
             playSound(serverLevel, pos);

@@ -21,11 +21,12 @@
 | Minecraft | Java |
 | --- | --- |
 | 26.3、26.2、26.1.2、26.1 | 25 |
-| 1.21.11、1.21.10、1.21.8、1.21.5、1.21.4 | 21 |
+| 1.21.11、1.21.10、1.21.8、1.21.5、1.21.4、1.21.1、1.21、1.20.6 | 21 |
+| 1.20.4、1.20.2、1.20.1 | 17 |
 
 请安装与游戏版本匹配的本扩展、Kaleidoscope Doll、Fabric Loader、Fabric API、GeckoLib 和 Forge Config API Port。多人游戏请在客户端和服务端都安装本扩展及前置。
 
-`1.21.8`、`1.21.5` 和 `1.21.4` 不包含 JEI 配方集成。
+`1.21.8`、`1.21.5`、`1.21.4` 及更早的表内版本不包含本扩展的 JEI 配方集成。`1.20.4`、`1.20.2` 和 `1.20.1` 的前置没有风弹玩偶配方。
 
 构建时请使用 JDK 25 或以上，并准备好对应 Minecraft 版本的 Kaleidoscope Doll Fabric JAR（当前用 `1.4.2` 构建验证）。前置 JAR 不包含在此仓库中。`-PminecraftTarget` 默认为 `26.3`，用 `-PlocalDollDependency` 指定前置 JAR 路径：
 
@@ -33,7 +34,7 @@
 .\gradlew.bat build runGameTest "-PminecraftTarget=26.3" "-PlocalDollDependency=C:/path/to/kaleidoscopedoll-26.3-fabric-1.4.2-fabric+mc26.3.jar"
 ```
 
-构建 `1.21.x` 时还需要 JDK 21 工具链；如需指定其路径，可设置 `DOLL_JDK21` 后传入 `-Porg.gradle.java.installations.fromEnv=DOLL_JDK21`。macOS / Linux 使用 `./gradlew`。默认版本的构建产物位于 `build/libs/`，其他版本的产物位于 `build/minecraft-<版本>/libs/`。
+构建旧版时还需要表中对应的 JDK 21 或 17 工具链；如需指定其路径，可将 `DOLL_GAME_JDK` 设为游戏 JDK 目录，再传入 `-Porg.gradle.java.installations.fromEnv=DOLL_GAME_JDK`。macOS / Linux 使用 `./gradlew`。默认版本的构建产物位于 `build/libs/`，其他版本的产物位于 `build/minecraft-<版本>/libs/`。
 
 ### GitHub Actions
 
@@ -51,7 +52,7 @@ CI 从公开的前置仓库拉取固定提交，逐版本构建前置，再构�
 
 ## English
 
-An unofficial Minecraft Fabric port of **Kaleidoscope Doll Workshop** by **Li Suchen**, based on the original `1.20.1-fabric` branch. It requires the separate **Kaleidoscope Doll Refabricated** mod for the same Minecraft version. Builds and world tests have passed for **26.3, 26.2, 26.1.2, 26.1, 1.21.11, 1.21.10, 1.21.8, 1.21.5, and 1.21.4**. JEI recipe integration is not available on `1.21.8`, `1.21.5`, or `1.21.4`.
+An unofficial Minecraft Fabric port of **Kaleidoscope Doll Workshop** by **Li Suchen**, based on the original `1.20.1-fabric` branch. It requires the separate **Kaleidoscope Doll Refabricated** mod for the same Minecraft version. See the table above for the supported Minecraft and Java versions. The add-on's JEI recipe integration is unavailable on `1.21.8`, `1.21.5`, `1.21.4`, and the older listed targets. The base mod does not provide wind charge dolls on `1.20.4`, `1.20.2`, or `1.20.1`.
 
 The port uses the base mod's computer instead of a separate Workshop Computer. Insert wool and enter a player name or a direct HTTP(S) skin PNG URL, then click **✔**; leave the field blank for your own skin, or Shift-click to use all the wool. Minecraft accounts take priority over LittleSkin. Direct URLs are stored with the doll and must return a `64×64` or `64×32` PNG without redirects.
 

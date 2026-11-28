@@ -31,8 +31,7 @@ public final class ComputerDollSlot extends Slot {
                 return 1;
             }
 
-            @Override
-            public int getMaxStackSize(ItemStack stack) {
+            @Override public int getMaxStackSize(ItemStack stack) {
                 return ModMessages.isPaidDoll(stack) ? stack.getMaxStackSize() : super.getMaxStackSize(stack);
             }
         };

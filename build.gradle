@@ -9,6 +9,12 @@ plugins {
 
 def target = providers.gradleProperty("minecraftTarget").orElse(project.minecraft_version).get()
 def profiles = [
+	"1.20.1": [api: "0.92.12+1.20.1", gecko: "4.8.6", geckoFile: "rt5We1KU", config: "HvR3IdRE", java: 17],
+	"1.20.2": [api: "0.91.6+1.20.2", gecko: "4.3.1", geckoFile: "496UKM7k", config: "sK1XwxTt", nightConfig: "3.6.6", java: 17],
+	"1.20.4": [api: "0.97.3+1.20.4", gecko: "4.4.4", geckoFile: "9xn1SoTo", config: "xbVGsTLe", nightConfig: "3.6.6", java: 17],
+	"1.20.6": [api: "0.100.8+1.20.6", gecko: "4.5.4", geckoFile: "9IHFGXrW", config: "LDpciQaD", nightConfig: "3.6.7", java: 21],
+	"1.21": [api: "0.102.0+1.21", gecko: "4.5.8", geckoFile: "11VBhLU2", config: "GOreNSW6", java: 21],
+	"1.21.1": [api: "0.116.18+1.21.1", gecko: "4.9.5", geckoFile: "ET6x3zyz", config: "N5qzq0XV", java: 21],
 	"1.21.4": [api: "0.119.4+1.21.4", gecko: "4.8.5", geckoFile: "HFSs3Co0", config: "SSKF75hc", nightConfig: "3.8.1", java: 21],
 	"1.21.5": [api: "0.128.2+1.21.5", gecko: "5.1.0", geckoFile: "AyXpbm2h", config: "fWnEuNPu", nightConfig: "3.8.1", java: 21],
 	"1.21.8": [api: "0.136.1+1.21.8", gecko: "5.2.2", geckoFile: "k4Azk0wN", config: "YbUUjWdw", nightConfig: "3.8.3", java: 21],
@@ -26,6 +32,8 @@ if (profile == null) {
 def defaultTarget = target == project.minecraft_version
 def javaRelease = profile.java ?: 25
 def remapped = javaRelease < 25
+def legacyModels = target in ["1.20.1", "1.20.2", "1.20.4", "1.20.6", "1.21", "1.21.1"]
+def legacyDataPaths = target.startsWith("1.20.")
 apply plugin: (remapped ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom')
 def upstreamBuild = defaultTarget ? "build" : "build/minecraft-${target}"
 layout.buildDirectory = layout.projectDirectory.dir(upstreamBuild)
@@ -44,6 +52,7 @@ repositories {
 		url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
 		content {
 			includeGroup("com.geckolib")
+			includeGroup("com.eliotlash.mclib")
 		}
 	}
 	exclusiveContent {
@@ -72,13 +81,21 @@ fabricApi {
 	configureTests {
 		createSourceSet = true
 		modId = "kaleidoscope_doll_player_test"
-		enableClientGameTests = true
+		enableClientGameTests = !legacyModels
 		clearRunDirectory = true
 	}
 }
 
+if (legacyModels) {
+	loom.runs.register("legacyClientSmoke") {
+		client()
+		source sourceSets.gametest
+		vmArg "-Dkaleidoscope.doll.player.legacyClientSmoke=true"
+	}
+}
+
 // Loom's test defaults share build/run even when the build directory is versioned.
-["gameTest", "clientGameTest"].each { testRun ->
+(legacyModels ? ["gameTest"] : ["gameTest", "clientGameTest"]).each { testRun ->
 	loom.runs.named(testRun) { runDir("${upstreamBuild}/test-runs/${testRun}") }
 }
 
@@ -93,9 +110,12 @@ dependencies {
 	add(scope, files(providers.gradleProperty("localDollDependency").orElse(
 			"../KaleidoscopeDoll/${upstreamBuild}/libs/kaleidoscopedoll-${target}-fabric-1.4.2-fabric+mc${target}.jar")))
 	add(remapped ? "modLocalRuntime" : "localRuntime", "maven.modrinth:forge-config-api-port:${profile.config}")
-	def nightConfig = profile.nightConfig ?: "3.8.0"
-	localRuntime "com.electronwill.night-config:core:${nightConfig}"
-	localRuntime "com.electronwill.night-config:toml:${nightConfig}"
+	if (javaRelease == 17) localRuntime "com.eliotlash.mclib:mclib:20"
+	if (target != "1.20.1") {
+		def nightConfig = profile.nightConfig ?: "3.8.0"
+		localRuntime "com.electronwill.night-config:core:${nightConfig}"
+		localRuntime "com.electronwill.night-config:toml:${nightConfig}"
+	}
 }
 
 if (remapped) {
@@ -112,7 +132,7 @@ processResources {
 	filesMatching("fabric.mod.json") {
 		expand metadata
 	}
-	if (target == "1.21.4") {
+	if (legacyModels || target == "1.21.4") {
 		from("src/main/resources/assets/kaleidoscope_doll_player/geckolib/models") {
 			into("assets/kaleidoscope_doll_player/geo")
 		}
@@ -120,9 +140,18 @@ processResources {
 			into("assets/kaleidoscope_doll_player/animations")
 		}
 	}
+	if (legacyModels) {
+		exclude "assets/kaleidoscope_doll_player/items/**", "assets/kaleidoscope_doll_player/geckolib/**"
+	}
+	if (legacyDataPaths) {
+		filesMatching("data/**/*.json") {
+			path = path.replace("/loot_table/", "/loot_tables/").replace("/recipe/", "/recipes/")
+		}
+	}
 	if (!defaultTarget) {
 		doLast {
-			def lootFile = new File(destinationDir, "data/kaleidoscope_doll_player/loot_table/blocks/player_doll.json")
+			def data = new File(destinationDir, "data/kaleidoscope_doll_player")
+			def lootFile = new File(data, "${legacyDataPaths ? 'loot_tables' : 'loot_table'}/blocks/player_doll.json")
 			def loot = new JsonSlurper().parse(lootFile)
 			def pool = loot.pools[0]
 			def entry = pool.entries[0]
@@ -131,8 +160,22 @@ processResources {
 			if (remapped || target in ["26.1", "26.1.2"]) pool.bonus_rolls = 0
 			def modifier = entry.remove("modifier")
 			modifier.function = modifier.remove("type")
-			entry.functions = [modifier]
+			entry.functions = javaRelease == 17 ? [[function: "minecraft:copy_nbt", source: "block_entity",
+					ops: [[source: "Owner", target: "kaleidoscope_doll_player_profile", op: "replace"]]]] : [modifier]
+			if (target == "1.20.1") loot.remove("random_sequence")
 			lootFile.setText(JsonOutput.prettyPrint(JsonOutput.toJson(loot)) + "\n", "UTF-8")
+			if (legacyModels) {
+				def assets = new File(destinationDir, "assets/kaleidoscope_doll_player")
+				def itemFile = new File(assets, "models/item/player_doll.json")
+				def itemModel = new JsonSlurper().parse(itemFile)
+				itemModel.parent = "builtin/entity"
+				itemFile.setText(JsonOutput.prettyPrint(JsonOutput.toJson(itemModel)) + "\n", "UTF-8")
+				def recipeFile = new File(data, "${legacyDataPaths ? 'recipes' : 'recipe'}/skin_lock.json")
+				def recipe = new JsonSlurper().parse(recipeFile)
+				recipe.ingredients = recipe.ingredients.collect { [item: it] }
+				if (javaRelease == 17) recipe.result.item = recipe.result.remove("id")
+				recipeFile.setText(JsonOutput.prettyPrint(JsonOutput.toJson(recipe)) + "\n", "UTF-8")
+			}
 		}
 	}
 }

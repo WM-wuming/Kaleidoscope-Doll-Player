@@ -48,8 +48,7 @@ public class DollBlockEntity extends BlockEntity implements GeoBlockEntity {
 
     // --- 数据同步 ---
 
-    @Override
-    protected void collectImplicitComponents(net.minecraft.core.component.DataComponentMap.Builder builder) {
+    @Override protected void collectImplicitComponents(net.minecraft.core.component.DataComponentMap.Builder builder) {
         super.collectImplicitComponents(builder);
         if (this.ownerProfile != null) {
             builder.set(net.minecraft.core.component.DataComponents.PROFILE, ResolvableProfile.createResolved(this.ownerProfile));

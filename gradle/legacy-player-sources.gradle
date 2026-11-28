@@ -1,0 +1,149 @@
+ext.translateLegacyPlayerLine = { String line, String target ->
+    boolean nbt = target in ["1.20.1", "1.20.2", "1.20.4"]
+    boolean oldCrafting = nbt || target == "1.20.6"
+    line = line
+        .replace(".setId(PLAYER_DOLL_KEY)", "")
+        .replace(".setId(SKIN_LOCK_KEY)", "")
+        .replace(".setId(DOLL_KEY)", "")
+        .replace("public @Nullable ResourceLocation getNoItemIcon()", "public @Nullable com.mojang.datafixers.util.Pair<ResourceLocation, ResourceLocation> getNoItemIcon()")
+        .replace("stack.get(DataComponents.ITEM_MODEL)", "DollFunctionRecipe.getDollModel(stack)")
+        .replace(".useBlockDescriptionPrefix()", "")
+        .replace(".equippableUnswappable(EquipmentSlot.HEAD)", "")
+        .replace("public InteractionResult use(Level level, Player player, InteractionHand hand)", "public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)")
+        .replace("return InteractionResult.CONSUME;", "return net.minecraft.world.InteractionResultHolder.consume(stack);")
+        .replace("protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData)", "public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state)")
+        .replace("protected RenderShape getRenderShape(", "public RenderShape getRenderShape(")
+        .replace("protected InteractionResult useItemOn(", "protected net.minecraft.world.ItemInteractionResult useItemOn(")
+        .replace("? SkinLockItem.useOnDoll(level, pos, player, hand)", "? net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide())")
+        .replace("return stack.is(ModItems.SKIN_LOCK) ? net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide())",
+            "if (stack.is(ModItems.SKIN_LOCK)) { SkinLockItem.useOnDoll(level, pos, player, hand); return net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide()); } return")
+        .replace(": super.useItemOn(stack, state, level, pos, player, hand, hit);", "super.useItemOn(stack, state, level, pos, player, hand, hit);")
+        .replace("import net.minecraft.world.item.equipment.Equippable;", "import net.minecraft.world.item.Equipable;")
+        .replace("Equippable equippable = head.get(DataComponents.EQUIPPABLE);", "Equipable equippable = Equipable.get(head);")
+        .replace("equippable.slot()", "equippable.getEquipmentSlot()")
+        .replace('"geckolib/models/" + name', '"geo/" + name')
+        .replace("public @Nullable GeoItemRenderer<DollItem> getGeoItemRenderer()", "public @Nullable net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getGeoItemRenderer()")
+        .replace("Thread.ofPlatform().daemon().name(\"kaleidoscope-doll-player-skin-\", 0).factory()", '''task -> {
+                Thread thread = new Thread(task, "kaleidoscope-doll-player-skin");
+                thread.setDaemon(true);
+                return thread;
+            }''')
+    if (oldCrafting) {
+        line = line.replace("ResourceLocation.fromNamespaceAndPath(", "new ResourceLocation(")
+            .replace("ResourceLocation.parse(", "new ResourceLocation(")
+            .replace("net.minecraft.world.item.crafting.CraftingInput", "net.minecraft.world.inventory.CraftingContainer")
+            .replace("CraftingInput input", "CraftingContainer input")
+            .replace("input.size()", "input.getContainerSize()")
+            .replace("input.items()", "input.getItems()")
+            .replace("CraftingInput.of(2, 1, List.of(", "craftingGrid(")
+            .replace("new ItemStack(Items.AMETHYST_SHARD)));", "new ItemStack(Items.AMETHYST_SHARD));")
+            .replace("new ItemStack(Items.SLIME_BALL)));", "new ItemStack(Items.SLIME_BALL));")
+            .replace("    private static void check(boolean value", '''    private static CraftingContainer craftingGrid(ItemStack first, ItemStack second) {
+        var menu = new net.minecraft.world.inventory.AbstractContainerMenu(null, -1) {
+            public boolean stillValid(net.minecraft.world.entity.player.Player player) { return false; }
+            public ItemStack quickMoveStack(net.minecraft.world.entity.player.Player player, int index) { return ItemStack.EMPTY; }
+        };
+        var grid = new net.minecraft.world.inventory.TransientCraftingContainer(menu, 2, 1);
+        grid.setItem(0, first);
+        grid.setItem(1, second);
+        return grid;
+    }
+
+    private static void check(boolean value''')
+    }
+    if (nbt) {
+        line = line.replace("software.bernie.geckolib.animation.PlayState", "software.bernie.geckolib.core.object.PlayState")
+            .replace("software.bernie.geckolib.animation.", "software.bernie.geckolib.core.animation.")
+            .replace("software.bernie.geckolib.animatable.GeoAnimatable", "software.bernie.geckolib.core.animatable.GeoAnimatable")
+            .replace("software.bernie.geckolib.animatable.instance.", "software.bernie.geckolib.core.animatable.instance.")
+            .replace("Item.TooltipContext context,", "Level context,")
+            .replace("TooltipContext context,", "Level context,")
+            .replace("import net.minecraft.world.item.component.ResolvableProfile;", "")
+            .replace("import net.minecraft.core.component.DataComponents;", "")
+            .replace("import kaleidoscopeDollPlayer.registry.ModDataComponents;", "")
+            .replace("ModDataComponents.register();", "")
+            .replace("ResolvableProfile", "GameProfile")
+            .replaceAll(/new GameProfile\((this\.ownerProfile|profile|frozen|DollItem\.normalizeProfile\(profile\)|SkinSnapshot\.create\(null, png, false\))\)/, '$1')
+            .replace(".map(GameProfile::gameProfile)", "")
+            .replace(".gameProfile()", "")
+            .replace("kaleidoscopeDollPlayer.util.LegacyProfiles.unresolved(name).resolve().thenApply(GameProfile::gameProfile)", "kaleidoscopeDollPlayer.util.LegacyProfiles.resolve(server, name)")
+            .replace(".getFirst()", ".get(0)")
+            .replace("isSameItemSameComponents(", "isSameItemSameTags(")
+            .replace("net.minecraft.core.HolderLookup.Provider registries", "net.minecraft.core.RegistryAccess registries")
+            .replace("getUpdateTag(HolderLookup.Provider registries)", "getUpdateTag()")
+            .replace("saveWithoutMetadata(registries)", "saveWithoutMetadata()")
+            .replace("saveAdditional(CompoundTag output, HolderLookup.Provider registries)", "saveAdditional(CompoundTag output)")
+            .replace("super.saveAdditional(output, registries)", "super.saveAdditional(output)")
+            .replace("protected void loadAdditional(CompoundTag input, HolderLookup.Provider registries)", "public void load(CompoundTag input)")
+            .replace("super.loadAdditional(input, registries)", "super.load(input)")
+            .replace('GameProfile.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, this.ownerProfile).result().ifPresent(tag -> output.put("Owner", tag));', 'output.putString("Owner", kaleidoscopeDollPlayer.duck.PlayerDollEntity.encodeProfile(this.ownerProfile));')
+            .replace('java.util.Optional.ofNullable(input.get("Owner")).flatMap(tag -> GameProfile.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag).result()).orElse(null)', 'kaleidoscopeDollPlayer.duck.PlayerDollEntity.decodeProfile(input.getString("Owner"))')
+            .replace("defineOwnerData(SynchedEntityData.Builder builder, CallbackInfo ci)", "defineOwnerData(CallbackInfo ci)")
+            .replace("builder.define(kaleidoscopeDollPlayer\$DATA_OWNER,", "((DollEntity) (Object) this).getEntityData().define(kaleidoscopeDollPlayer\$DATA_OWNER,")
+            .replace("result.getOrDefault(ModDataComponent.TAG_DOLL_ENTITY, new CompoundTag())", "java.util.Objects.requireNonNullElseGet(ModDataComponent.get(result, ModDataComponent.TAG_DOLL_ENTITY), CompoundTag::new)")
+            .replaceAll(/\b(\w+)\.get\((ModDataComponent\.\w+)\)/, 'ModDataComponent.get($1, $2)')
+            .replaceAll(/\b(\w+)\.set\((ModDataComponent\.\w+), /, 'ModDataComponent.set($1, $2, ')
+            .replaceAll(/(\w+)\.set\(DataComponents\.PROFILE, (.+)\);/, 'kaleidoscopeDollPlayer.util.LegacyProfiles.write($1, $2);')
+            .replaceAll(/(\w+)\.get\(DataComponents\.PROFILE\)/, 'kaleidoscopeDollPlayer.util.LegacyProfiles.read($1)')
+            .replace("matching.get(0).get(DataComponents.PROFILE)", "kaleidoscopeDollPlayer.util.LegacyProfiles.read(matching.get(0))")
+            .replaceAll(/(\w+)\.has\(DataComponents\.PROFILE\)/, 'kaleidoscopeDollPlayer.util.LegacyProfiles.has($1)')
+            .replace("result.set(ModDataComponents.HELMET_DOLL_PROFILE, kaleidoscopeDollPlayer.util.LegacyProfiles.read(doll));", "kaleidoscopeDollPlayer.util.LegacyProfiles.copy(doll, result);")
+            .replace("kaleidoscopeDollPlayer.util.LegacyProfiles.write(doll, head.get(ModDataComponents.HELMET_DOLL_PROFILE));", "kaleidoscopeDollPlayer.util.LegacyProfiles.copy(head, doll);")
+            .replace("test.makeMockPlayer(GameType.SURVIVAL)", "test.makeMockPlayer()")
+            .replace("protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,", "public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,")
+            .replace("if (stack.is(ModItems.SKIN_LOCK)) { SkinLockItem.useOnDoll(level, pos, player, hand); return net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide()); } return", "if (player.getItemInHand(hand).is(ModItems.SKIN_LOCK)) return SkinLockItem.useOnDoll(level, pos, player, hand); return")
+            .replace("super.useItemOn(stack, state, level, pos, player, hand, hit);", "useWithoutItem(state, level, pos, player, hit);")
+            .replace("protected VoxelShape getShape(", "public VoxelShape getShape(")
+            .replace("player.canInteractWithBlock(pos, 0.0)", "player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(pos)) <= 36.0")
+            .replace("createGeoRenderer(Consumer consumer)", "createRenderer(Consumer consumer)")
+            .replace("import software.bernie.geckolib.animatable.client.GeoRenderProvider;", "import software.bernie.geckolib.animatable.client.RenderProvider;")
+            .replace("new GeoRenderProvider()", "new RenderProvider()")
+            .replace("getGeoItemRenderer()", "getCustomRenderer()")
+            .replace("    public final MutableObject<Object> geoRenderProvider", "    @Override public java.util.function.Supplier<Object> getRenderProvider() { return geoRenderProvider::getValue; }\n    public final MutableObject<Object> geoRenderProvider")
+            .replace("@Override protected InteractionResult useWithoutItem", "private InteractionResult useWithoutItem")
+            .replace("Thread.ofPlatform().daemon().name(\"doll-snapshot-\", 0).factory()", '''task -> {
+                Thread thread = new Thread(task, "doll-snapshot");
+                thread.setDaemon(true);
+                return thread;
+            }''')
+            .replace("PayloadTypeRegistry.playC2S().register(CraftDollPayload.TYPE, CraftDollPayload.STREAM_CODEC);", "")
+            .replace("PayloadTypeRegistry.playC2S().register(CraftSkinPayload.TYPE, CraftSkinPayload.STREAM_CODEC);", "")
+            .replace("import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;", "")
+            .replace("import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;", "import com.kaleidoscopedoll.network.LegacyServerNetwork;")
+            .replace("import com.kaleidoscopedoll.network.LegacyServerNetwork;", "import com.kaleidoscopedoll.network.LegacyServerNetwork;\nimport com.mojang.authlib.GameProfile;")
+            .replace("import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;", "import com.kaleidoscopedoll.network.LegacyClientNetwork;")
+            .replace("ServerPlayNetworking.registerGlobalReceiver(", "LegacyServerNetwork.registerGlobalReceiver(")
+            .replace("ClientPlayNetworking.send(", "LegacyClientNetwork.send(")
+            .replaceAll(/import net\.minecraft\.network\.(?:RegistryFriendlyByteBuf|codec\.\w+|protocol\.common\.custom\.CustomPacketPayload);/, "")
+            .replace("implements CustomPacketPayload", "implements LegacyServerNetwork.Payload")
+            .replace("Type<? extends CustomPacketPayload>", "LegacyServerNetwork.Channel<? extends LegacyServerNetwork.Payload>")
+            .replace("Type<CraftSkinPayload> type()", "LegacyServerNetwork.Channel<CraftSkinPayload> type()")
+            .replace("public static final Type<CraftDollPayload> TYPE = new Type<>(CRAFT_DOLL_ID);", '''public static final LegacyServerNetwork.Channel<CraftDollPayload> TYPE = new LegacyServerNetwork.Channel<>(
+                CRAFT_DOLL_ID, buffer -> new CraftDollPayload(buffer.readUtf(16), buffer.readBoolean()));
+        public void write(net.minecraft.network.FriendlyByteBuf buffer) {
+            buffer.writeUtf(targetName, 16).writeBoolean(craftAll);
+        }''')
+            .replace("public static final Type<CraftSkinPayload> TYPE = new Type<>(", "public static final LegacyServerNetwork.Channel<CraftSkinPayload> TYPE = new LegacyServerNetwork.Channel<>(")
+            .replace('new ResourceLocation(KaleidoscopeDollPlayer.MOD_ID, "craft_skin"));', '''new ResourceLocation(KaleidoscopeDollPlayer.MOD_ID, "craft_skin"),
+                buffer -> new CraftSkinPayload(buffer.readVarInt(), buffer.readByteArray(SkinImages.MAX_SNAPSHOT_BYTES), buffer.readBoolean()));
+        public void write(net.minecraft.network.FriendlyByteBuf buffer) {
+            buffer.writeVarInt(menuId).writeByteArray(png).writeBoolean(craftAll);
+        }''')
+        if (line.contains('StreamCodec<') || line.contains('ByteBufCodecs.') ||
+                line.trim() in ['CraftDollPayload::new);', 'CraftSkinPayload::new);']) return ""
+        if (line.contains('protected void collectImplicitComponents(')) return '    private void unusedLegacyComponentHook() {'
+        if (line.contains('super.collectImplicitComponents(') || line.contains('builder.set(net.minecraft.core.component.DataComponents.PROFILE')) return ""
+        line = line
+            .replace('@Override public int getMaxStackSize(ItemStack stack)', 'public int getMaxStackSize(ItemStack stack)')
+            .replace('stack.getMaxStackSize() : super.getMaxStackSize(stack)', 'stack.getMaxStackSize() : 1')
+            .replace("output.getMaxStackSize(stack)", "(ModMessages.isPaidDoll(stack) ? stack.getMaxStackSize() : 1)")
+            .replace("output.getMaxStackSize(doll)", "doll.getMaxStackSize()")
+        if (line == "                return 1;") return "                return ModMessages.isPaidDoll(getItem(0)) ? getItem(0).getMaxStackSize() : 1;"
+        if (target == "1.20.1") line = line.replace("textures.value()", "textures.getValue()")
+            .replace("p.value()", "p.getValue()").replace("property.value()", "property.getValue()")
+            .replace("textures.next().value()", "textures.next().getValue()")
+            .replace(".orElseThrow().value().assemble(", ".orElseThrow().assemble(")
+        if (target != "1.20.4") line = line.replace("getCloneItemStack(LevelReader level,", "getCloneItemStack(BlockGetter level,")
+    }
+    return line
+}
