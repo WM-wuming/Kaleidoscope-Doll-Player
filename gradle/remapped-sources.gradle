@@ -1,5 +1,6 @@
 def target = project.remappedMinecraftTarget
-def immediate = target in ["1.21.8", "1.21.5"]
+def geckoFour = target == "1.21.4"
+def immediate = target in ["1.21.8", "1.21.5"] || geckoFour
 def sides = ["main", "client", "gametest"]
 def sources = sides.collectEntries { side -> [(side): sourceSets[side].java.srcDirs] }
 def translate = tasks.register("translateRemappedSources", Sync) {
@@ -13,6 +14,7 @@ def translate = tasks.register("translateRemappedSources", Sync) {
                 if (immediate && side == "client") {
                     exclude "**/DollEntityRenderMixin.java", "**/DollEntityItemModelMixin.java",
                             "**/DollEntitySkinRenderer.java", "**/DollJeiRecipeMakersMixin.java"
+                    if (geckoFour) exclude "**/DollBlockModel.java", "**/DollItemModel.java", "**/DollItemRenderer.java"
                 }
                 filter { String line ->
                     line = line.replace("com.geckolib", "software.bernie.geckolib")
@@ -67,7 +69,7 @@ def translate = tasks.register("translateRemappedSources", Sync) {
                                     "ImmutableMultimap.of(TEXTURES, new Property(TEXTURES, payload))")
                         }
                     }
-                    if (target == "1.21.5") {
+                    if (target == "1.21.5" || geckoFour) {
                         line = line.replace("import net.minecraft.world.level.storage.ValueInput;", "")
                             .replace("import net.minecraft.world.level.storage.ValueOutput;", "")
                             .replace("saveAdditional(ValueOutput output)", "saveAdditional(CompoundTag output, HolderLookup.Provider registries)")
@@ -83,6 +85,34 @@ def translate = tasks.register("translateRemappedSources", Sync) {
                                 line.contains('+ "Lnet/minecraft/client/multiplayer/ClientLevel;"')) return ""
                         line = line.replace('Lnet/minecraft/world/entity/LivingEntity;)', ')')
                     }
+                    if (geckoFour) {
+                        line = line.replace("software.bernie.geckolib.animatable.manager.AnimatableManager", "software.bernie.geckolib.animation.AnimatableManager")
+                            .replace("software.bernie.geckolib.animatable.processing.AnimationController", "software.bernie.geckolib.animation.AnimationController")
+                            .replace('>("squeeze", 0,', '>(this, "squeeze", 0,')
+                            .replace("renderer.base.GeckolibItemSpecialRenderer", "renderer.GeckolibSpecialRenderer")
+                            .replace("renderer/base/GeckolibItemSpecialRenderer", "renderer/GeckolibSpecialRenderer")
+                            .replace("GeckolibItemSpecialRenderer.class.getDeclaredMethods()", "GeckolibSpecialRenderer.class.getDeclaredMethods()")
+                            .replace("value = GeckolibItemSpecialRenderer.class", "value = GeckolibSpecialRenderer.class")
+                            .replace("new DynamicTexture(() -> \"doll_skin\", image)", "new DynamicTexture(image)")
+                            .replace("ItemDisplayContext.HEAD, entity)", "ItemDisplayContext.HEAD, false, entity)")
+                            .replace("inventoryTick(ItemStack stack, ServerLevel level, Entity entity, EquipmentSlot slot)", "inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected)")
+                            .replace("super.inventoryTick(stack, level, entity, slot);", "super.inventoryTick(stack, world, entity, slot, selected);\n        if (!(world instanceof ServerLevel level)) return;")
+                            .replace("import net.minecraft.world.item.component.TooltipDisplay;", "")
+                            .replace("TooltipContext context, TooltipDisplay display,", "TooltipContext context,")
+                            .replace("Consumer<Component> tooltip, TooltipFlag flag", "java.util.List<Component> tooltip, TooltipFlag flag")
+                            .replace("tooltip.accept(", "tooltip.add(")
+                            .replace("input.getString(PlayerDollEntity.OWNER_TAG).ifPresent(this::kaleidoscopeDollPlayer\$setOwnerProfileJson);",
+                                "this.kaleidoscopeDollPlayer\$setOwnerProfileJson(input.getString(PlayerDollEntity.OWNER_TAG));")
+                            .replace("output.store(\"Owner\", ResolvableProfile.CODEC, new ResolvableProfile(this.ownerProfile));",
+                                "ResolvableProfile.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, new ResolvableProfile(this.ownerProfile)).result().ifPresent(tag -> output.put(\"Owner\", tag));")
+                            .replace("input.read(\"Owner\", ResolvableProfile.CODEC)", "java.util.Optional.ofNullable(input.get(\"Owner\")).flatMap(tag -> ResolvableProfile.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag).result())")
+                            .replace("entityTag.read(DollEntity.TAG_BLOCK_STATE, BlockState.CODEC)", "BlockState.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, entityTag.get(DollEntity.TAG_BLOCK_STATE)).result()")
+                            .replace("entityTag == null ? null : entityTag.getString(PlayerDollEntity.OWNER_TAG)", "entityTag == null ? null : java.util.Optional.of(entityTag.getString(PlayerDollEntity.OWNER_TAG)).filter(value -> !value.isEmpty())")
+                            .replace("import net.fabricmc.fabric.api.gametest.v1.GameTest;", "import net.minecraft.gametest.framework.GameTest;")
+                            .replace("@GameTest", '@GameTest(template = "fabric-gametest-api-v1:empty")')
+                            .replace("import software.bernie.geckolib.constant.dataticket.DataTicket;", "")
+                        if (line.contains("public static final DataTicket<GameProfile>")) return ""
+                    }
                     line
                 }
             }
@@ -90,7 +120,18 @@ def translate = tasks.register("translateRemappedSources", Sync) {
     }
     if (immediate) {
         from("src/compat/immediate/main") { into("main") }
-        from("src/compat/immediate/client") { into("client") }
+        from("src/compat/immediate/client") {
+            into("client")
+            if (geckoFour) {
+                filter { String line ->
+                    line.replace("tag.getString(PlayerDollEntity.OWNER_TAG).map(",
+                        "java.util.Optional.of(tag.getString(PlayerDollEntity.OWNER_TAG)).filter(value -> !value.isEmpty()).map(")
+                }
+            }
+        }
+    }
+    if (geckoFour) {
+        from("src/compat/gecko4/client") { into("client") }
     }
     into(layout.buildDirectory.dir("remapped-sources"))
 }

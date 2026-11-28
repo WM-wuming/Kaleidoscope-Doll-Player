@@ -21,11 +21,11 @@
 | Minecraft | Java |
 | --- | --- |
 | 26.3、26.2、26.1.2、26.1 | 25 |
-| 1.21.11、1.21.10、1.21.8、1.21.5 | 21 |
+| 1.21.11、1.21.10、1.21.8、1.21.5、1.21.4 | 21 |
 
 请安装与游戏版本匹配的本扩展、Kaleidoscope Doll、Fabric Loader、Fabric API、GeckoLib 和 Forge Config API Port。多人游戏请在客户端和服务端都安装本扩展及前置。
 
-`1.21.8` 和 `1.21.5` 不包含 JEI 配方集成。
+`1.21.8`、`1.21.5` 和 `1.21.4` 不包含 JEI 配方集成。
 
 构建时请使用 JDK 25 或以上，并准备好对应 Minecraft 版本的 Kaleidoscope Doll Fabric JAR（当前用 `1.4.2` 构建验证）。前置 JAR 不包含在此仓库中。`-PminecraftTarget` 默认为 `26.3`，用 `-PlocalDollDependency` 指定前置 JAR 路径：
 
@@ -51,7 +51,7 @@ CI 从公开的前置仓库拉取固定提交，逐版本构建前置，再构�
 
 ## English
 
-An unofficial Minecraft Fabric port of **Kaleidoscope Doll Workshop** by **Li Suchen**, based on the original `1.20.1-fabric` branch. It requires the separate **Kaleidoscope Doll Refabricated** mod for the same Minecraft version. Builds and world tests have passed for **26.3, 26.2, 26.1.2, 26.1, 1.21.11, 1.21.10, 1.21.8, and 1.21.5**. JEI recipe integration is not available on `1.21.8` or `1.21.5`.
+An unofficial Minecraft Fabric port of **Kaleidoscope Doll Workshop** by **Li Suchen**, based on the original `1.20.1-fabric` branch. It requires the separate **Kaleidoscope Doll Refabricated** mod for the same Minecraft version. Builds and world tests have passed for **26.3, 26.2, 26.1.2, 26.1, 1.21.11, 1.21.10, 1.21.8, 1.21.5, and 1.21.4**. JEI recipe integration is not available on `1.21.8`, `1.21.5`, or `1.21.4`.
 
 The port uses the base mod's computer instead of a separate Workshop Computer. Insert wool and enter a player name or a direct HTTP(S) skin PNG URL, then click **✔**; leave the field blank for your own skin, or Shift-click to use all the wool. Minecraft accounts take priority over LittleSkin. Direct URLs are stored with the doll and must return a `64×64` or `64×32` PNG without redirects.
 

@@ -9,6 +9,7 @@ plugins {
 
 def target = providers.gradleProperty("minecraftTarget").orElse(project.minecraft_version).get()
 def profiles = [
+	"1.21.4": [api: "0.119.4+1.21.4", gecko: "4.8.5", geckoFile: "HFSs3Co0", config: "SSKF75hc", nightConfig: "3.8.1", java: 21],
 	"1.21.5": [api: "0.128.2+1.21.5", gecko: "5.1.0", geckoFile: "AyXpbm2h", config: "fWnEuNPu", nightConfig: "3.8.1", java: 21],
 	"1.21.8": [api: "0.136.1+1.21.8", gecko: "5.2.2", geckoFile: "k4Azk0wN", config: "YbUUjWdw", nightConfig: "3.8.3", java: 21],
 	"1.21.10": [api: "0.138.4+1.21.10", gecko: "5.3-alpha-3", geckoFile: "7qjQQSWv", config: "IKHTwwTv", java: 21],
@@ -110,6 +111,14 @@ processResources {
 
 	filesMatching("fabric.mod.json") {
 		expand metadata
+	}
+	if (target == "1.21.4") {
+		from("src/main/resources/assets/kaleidoscope_doll_player/geckolib/models") {
+			into("assets/kaleidoscope_doll_player/geo")
+		}
+		from("src/main/resources/assets/kaleidoscope_doll_player/geckolib/animations") {
+			into("assets/kaleidoscope_doll_player/animations")
+		}
 	}
 	if (!defaultTarget) {
 		doLast {
